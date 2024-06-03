@@ -21,7 +21,10 @@ const availableResolutionsValidation = body('availableResolutions')
   .if(body('availableResolutions').exists({ checkNull: true, checkFalsy: true }))
   .isIn(['P144', 'P240', 'P360', 'P480', 'P720', 'P1080', 'P1440', 'P2160'])
   .withMessage('Resolution should be one from the \'P144\', \'P240\', \'P360\', \'P480\', \'P720\', \'P1080\', \'P1440\', \'P2160')
-
+const minAgeRestriction = body('minAgeRestriction')
+  .optional({ nullable: true })
+  .isInt({ min: 1, max: 18 })
+  .withMessage('Age must be an integer between 1 and 18.')
 videosRoutes.get('/', (req: any, res: any) => {
   res.send(videosRepository.findAllVideos())
 })
@@ -41,7 +44,7 @@ videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsVa
   return res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
 })
 
-videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, inputValidationMiddleware, (req: any, res: any) => {
+videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, inputValidationMiddleware, (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
     return
