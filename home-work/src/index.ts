@@ -1,15 +1,13 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
+import { videosRoutes } from './routes/videos-routes';
 
-const app = express()
-const port = process.env.PORT || 8080
+export const app = express()
+const port = 3000
 
-app.get('/', (_req: Request, res: Response) => {
-  return res.send('Express Typescript on Vercel')
-})
+const jsonBodyMiddleware = express.json();
+app.use(jsonBodyMiddleware);
 
-app.get('/ping', (_req: Request, res: Response) => {
-  return res.send('pong 🏓')
-})
+app.use('/videos', videosRoutes)
 
 app.listen(port, () => {
   return console.log(`Server is listening on ${port}`)
