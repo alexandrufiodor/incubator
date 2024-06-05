@@ -1,15 +1,8 @@
-import express from 'express'
-
-export const app = express();
-const port = 5000;
-
-const jsonBodyMiddleware = express.json();
-app.use(jsonBodyMiddleware);
+const express = require('express');
+const app = express();
 
 app.get('/', (req, res) => {
-  return res.send('Hello Samurai')
-})
+  res.send('Hello from Express on Vercel!');
+});
 
-app.listen(port, () => {
-  return console.log(`Server is listening on ${port}`)
-})
+module.exports = app;
