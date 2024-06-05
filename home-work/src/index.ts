@@ -12,4 +12,8 @@ app.delete('/api/testing/all-data', (req, res) => {
   res.status(204);
 })
 
-module.exports = app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+// module.exports = app;
