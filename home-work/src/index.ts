@@ -9,9 +9,9 @@ app.use(jsonBodyMiddleware);
 
 let db: any = [];
 app.get('/videos', (req: any, res: any) => {
-  res.json(db);
+  res.send('Hello Samurai')
 })
 
 app.listen(port, () => {
-  return console.log(`Server is listening on ${port}`)
+  console.log(`Server is listening on ${port}`)
 })
