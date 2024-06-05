@@ -1,9 +1,9 @@
-import express from 'express';
+import { Router } from 'express';
 import { videosRepository } from '../repositories/videos-repository';
 import { body } from 'express-validator';
 import { inputValidationMiddleware } from '../middlewares/middlewares';
 
-export const videosRoutes = express.Router();
+export const videosRoutes = Router();
 
 const titleValidation = body('title')
   .notEmpty()
@@ -41,18 +41,16 @@ videosRoutes.get('/:id', (req: any, res: any) => {
 })
 
 videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsValidation, inputValidationMiddleware, (req: any, res: any) => {
-  return res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
+  res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
 })
 
 videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, inputValidationMiddleware, (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
-    return
   }
   const findVideo = videosRepository.findVideosById(+req.params.id);
   if (!findVideo) {
     res.sendStatus(404);
-    return
   }
   res.status(200).json(videosRepository.updateVideo(+req.params.id, req.body));
 })
@@ -60,10 +58,9 @@ videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutions
 videosRoutes.delete('/:id', (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
-    return
   }
   if (videosRepository.deleteVideo(+req.params.id)) {
-    return res.send(204);
+    res.send(204);
   }
   res.sendStatus(404);
 })
