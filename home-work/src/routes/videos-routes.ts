@@ -61,7 +61,10 @@ videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutions
   if (!findVideo) {
     res.sendStatus(404);
   }
-  res.sendStatus(204);
+  const updatedVideo = videosRepository.updateVideo(+req.params.id, req.body)
+  if (updatedVideo) {
+    res.sendStatus(204);
+  }
 })
 
 videosRoutes.delete('/:id', (req: any, res: any) => {
@@ -69,10 +72,7 @@ videosRoutes.delete('/:id', (req: any, res: any) => {
     res.sendStatus(404);
   }
   if (videosRepository.deleteVideo(+req.params.id)) {
-    const updatedVideo = videosRepository.updateVideo(+req.params.id, req.body)
-    if (updatedVideo) {
       res.send(204);
-    }
   }
   res.sendStatus(404);
 })
