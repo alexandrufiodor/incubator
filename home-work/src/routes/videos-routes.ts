@@ -25,6 +25,10 @@ const minAgeRestriction = body('minAgeRestriction')
   .optional({ nullable: true })
   .isInt({ min: 1, max: 18 })
   .withMessage('Age must be an integer between 1 and 18.')
+const canBeDownloaded = body('canBeDownloaded')
+  .isBoolean()
+  .withMessage('canBeDownloaded should be boolean')
+
 videosRoutes.get('/', (req: any, res: any) => {
   res.send(videosRepository.findAllVideos())
 })
@@ -44,7 +48,7 @@ videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsVa
   res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
 })
 
-videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, inputValidationMiddleware, (req: any, res: any) => {
+videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, canBeDownloaded, inputValidationMiddleware, (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
