@@ -7,9 +7,9 @@ const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello Samurai')
+  return res.send('Hello Samurai')
 })
 
 app.listen(port, () => {
-  console.log(`Server is listening on ${port}`)
+  return console.log(`Server is listening on ${port}`)
 })
