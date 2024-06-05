@@ -25,6 +25,9 @@ const minAgeRestriction = body('minAgeRestriction')
   .optional({ nullable: true })
   .isInt({ min: 1, max: 18 })
   .withMessage('Age must be an integer between 1 and 18.')
+const publicationDate = body('publicationDate')
+  .isISO8601()
+  .withMessage('Invalid date-time format. Use ISO 8601 format.')
 const canBeDownloaded = body('canBeDownloaded')
   .isBoolean()
   .withMessage('canBeDownloaded should be boolean')
@@ -48,7 +51,7 @@ videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsVa
   res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
 })
 
-videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, canBeDownloaded, inputValidationMiddleware, (req: any, res: any) => {
+videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, canBeDownloaded, publicationDate, inputValidationMiddleware, (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
@@ -56,7 +59,7 @@ videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutions
   if (!findVideo) {
     res.sendStatus(404);
   }
-  res.status(200).json(videosRepository.updateVideo(+req.params.id, req.body));
+  res.sendStatus(204);
 })
 
 videosRoutes.delete('/:id', (req: any, res: any) => {

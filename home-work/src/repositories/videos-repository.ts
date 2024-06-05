@@ -21,6 +21,8 @@ export const videosRepository = {
     return videosDB.find(video => video.id === id);
   },
   createVideo(title: string, author: string, availableResolutions: availableResolutions) {
+    const publicationDate = new Date();
+    publicationDate.setDate(publicationDate.getDate() + 1);
     const newVideo: video = {
       id: videosDB?.[videosDB?.length -1]?.id + 1 || 1,
       title,
@@ -28,7 +30,7 @@ export const videosRepository = {
       canBeDownloaded: false,
       minAgeRestriction: null,
       createdAt: (new Date()).toISOString(),
-      publicationDate: (new Date()).toISOString(),
+      publicationDate: publicationDate.toISOString(),
       availableResolutions,
     }
     videosDB = [...videosDB, newVideo]
