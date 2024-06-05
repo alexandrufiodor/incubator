@@ -1,14 +1,12 @@
-import express from 'express'
-// import { videosRoutes } from './routes/videos-routes';
+import express, { Request, Response } from 'express'
 
 export const app = express();
-const port = 3000;
+const port = 5000;
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
 
-let db: any = [];
-app.get('/videos', (req: any, res: any) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello Samurai')
 })
 
