@@ -47,8 +47,7 @@ export const videosRepository = {
     if (index !== -1) {
       videosDB[index] = {
         ...videosDB[index],
-        ...video,
-        publicationDate: (new Date()).toISOString(),
+        ...video
       };
     }
     return videosDB;
