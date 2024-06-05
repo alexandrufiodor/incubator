@@ -14,7 +14,6 @@ let db = [];
 exports.app.get('/videos', (req, res) => {
     res.json(db);
 });
-// app.use('/videos', videosRoutes)
 exports.app.listen(port, () => {
     return console.log(`Server is listening on ${port}`);
 });
