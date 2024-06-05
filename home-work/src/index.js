@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 
 export const app = express();
 const port = 5000;
@@ -6,7 +6,7 @@ const port = 5000;
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (req, res) => {
   return res.send('Hello Samurai')
 })
 
