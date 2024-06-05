@@ -11,7 +11,7 @@ type video = {
   availableResolutions: availableResolutions,
 }
 
-let videosDB: Array<video> = []
+export let videosDB: Array<video> = []
 
 export const videosRepository = {
   findAllVideos() {
@@ -59,5 +59,9 @@ export const videosRepository = {
       }
     }
     return false;
+  },
+  deleteAllVideos() {
+    videosDB = [];
+    return true;
   }
 }
