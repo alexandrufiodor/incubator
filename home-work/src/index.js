@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express'
+import { videosRoutes } from './routes/videos-routes';
 const app = express();
 
-app.get('/', (req, res) => {
-  res.send('Hello from Express on Vercel!');
-});
+const jsonBodyMiddleware = express.json();
+app.use(jsonBodyMiddleware);
+
+app.use('/videos', videosRoutes)
 
 module.exports = app;
