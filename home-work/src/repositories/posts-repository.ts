@@ -1,4 +1,4 @@
-import { blogsDB, blogsRepository } from './blogs-repository';
+import { blogsRepository } from './blogs-repository';
 
 type post = {
   id: string,

@@ -1,4 +1,3 @@
-
 type availableResolutions = Array<string>
 type video = {
   id: number,
