@@ -12,7 +12,8 @@ export const blogsRepository = {
     return blogsDB;
   },
   findBlogById(id: string) {
-    return blogsDB.find(blog => blog.id === id);
+    const blogs = blogsDB.find(blog => blog.id === id)
+    return blogs;
   },
   createBlog(name: string, description: string, websiteUrl: string) {
     const newBlog: blog = {

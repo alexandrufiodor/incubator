@@ -35,6 +35,7 @@ const blogIdValidation = body('blogId')
     if (!blog) {
       return Promise.reject('Blog with this blogId does not exist');
     }
+    return true
   })
 
 
