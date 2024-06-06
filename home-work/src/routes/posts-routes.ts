@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { postsRepository } from '../repositories/posts-repository';
+import { blogsRepository } from '../repositories/blogs-repository';
 
 export const postsRoutes = Router();
 
@@ -29,9 +30,12 @@ const contentValidation = body('content')
 const blogIdValidation = body('blogId')
   .notEmpty()
   .withMessage('blogId field is required.')
-  .isString()
-  .trim()
-  .withMessage('blogId length should be string');
+  .custom((value) => {
+    const blog = blogsRepository.findBlogById(value);
+    if (!blog) {
+      return Promise.reject('Blog with this blogId does not exist');
+    }
+  })
 
 
 postsRoutes.get('/', (req, res) => {
@@ -66,8 +70,6 @@ postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidat
   const updatedPost = postsRepository.updatePost(req.params.id, req.body)
   if (updatedPost) {
     res.sendStatus(204);
-  } else {
-    res.sendStatus(404);
   }
 })
 postsRoutes.delete('/:id',authMiddleware, (req, res) => {

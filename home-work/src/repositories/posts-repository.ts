@@ -32,7 +32,6 @@ export const postsRepository = {
       postsDB = [...postsDB, newPost]
       return newPost;
     }
-    return false
   },
   updatePost(id: string, post: {
     title: string, shortDescription: string, content: string, blogId: string
@@ -49,7 +48,6 @@ export const postsRepository = {
       }
       return postsDB;
     }
-    return false
   },
   deletePost(id: string) {
     for (let i = 0; i < postsDB.length; i++) {
