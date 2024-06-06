@@ -43,7 +43,7 @@ export const postsRepository = {
         postsDB[index] = {
           ...postsDB[index],
           ...post,
-          blogId: findBlog?.name
+          blogName: findBlog?.name
         };
       }
       return postsDB;
