@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { blogsRepository } from '../repositories/blogs-repository';
 import { body } from 'express-validator';
-import { authMiddleware } from '../middlewares/middlewares';
+import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 
 export const blogsRoutes = Router();
 
@@ -38,10 +38,10 @@ blogsRoutes.get('/:id', (req, res) => {
   }
   res.send(findBlog)
 })
-blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, (req, res) => {
+blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, (req, res) => {
   res.status(201).send(blogsRepository.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
 })
-blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, (req, res) => {
+blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
@@ -54,7 +54,7 @@ blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, w
     res.sendStatus(204);
   }
 })
-blogsRoutes.delete('/:id', authMiddleware, (req, res) => {
+blogsRoutes.delete('/:id',authMiddleware, (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
