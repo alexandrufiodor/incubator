@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { videosRepository } from '../repositories/videos-repository';
 import { body } from 'express-validator';
-import { inputValidationMiddleware } from '../middlewares/middlewares';
+import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 
 export const videosRoutes = Router();
 
@@ -34,7 +34,7 @@ const canBeDownloaded = body('canBeDownloaded')
   .isBoolean()
   .withMessage('canBeDownloaded should be boolean')
 
-videosRoutes.get('/', (req: any, res: any) => {
+videosRoutes.get('/', authMiddleware, (req: any, res: any) => {
   res.send(videosRepository.findAllVideos())
 })
 
