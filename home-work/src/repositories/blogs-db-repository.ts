@@ -37,6 +37,10 @@ export const blogsDbRepository = {
   },
   async findBlogById(id: string):  Promise<BlogType | null> {
     const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ id });
+    // @ts-ignore
+    delete blog._id;
+    // @ts-ignore
+    delete blog.acknowledged;
     return blog;
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
