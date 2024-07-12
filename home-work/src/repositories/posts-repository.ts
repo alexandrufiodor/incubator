@@ -1,6 +1,6 @@
 import { blogsRepository } from './blogs-repository';
 
-type post = {
+type PostType = {
   id: string,
   title: string,
   shortDescription: string,
@@ -9,19 +9,19 @@ type post = {
   blogName: string
 }
 
-export let postsDB: Array<post> = []
+export let postsDB: Array<PostType> = []
 
 export const postsRepository = {
-  findAllPosts() {
+  async findAllPosts(): Promise<Array<PostType>> {
     return postsDB;
   },
-  findPostById(id: string) {
-    return postsDB.find(post => post.id === id);
+  async findPostById(id: string): Promise<PostType | undefined> {
+    return postsDB.find((post:PostType) => post.id === id);
   },
-  createPost(title: string, shortDescription: string, content: string, blogId: string) {
-    const findBlog = blogsRepository.findBlogById(blogId)
+  async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
+    const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {
-      const newPost: post = {
+      const newPost: PostType = {
         id: (new Date()).toISOString(),
         title,
         shortDescription,
@@ -33,10 +33,10 @@ export const postsRepository = {
       return newPost;
     }
   },
-  updatePost(id: string, post: {
+  async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string, blogId: string
-  }) {
-    const findBlog = blogsRepository.findBlogById(post?.blogId)
+  }): Promise<Array<PostType> | undefined> {
+    const findBlog = await blogsRepository.findBlogById(post?.blogId)
     if (findBlog) {
       const index = postsDB.findIndex(post => post.id === id);
       if (index !== -1) {
@@ -49,7 +49,7 @@ export const postsRepository = {
       return postsDB;
     }
   },
-  deletePost(id: string) {
+  async deletePost(id: string) : Promise<boolean> {
     for (let i = 0; i < postsDB.length; i++) {
       if (postsDB[i].id === id) {
         postsDB.splice(i, 1);
@@ -58,7 +58,7 @@ export const postsRepository = {
     }
     return false;
   },
-  deleteAllPosts() {
+  async deleteAllPosts(): Promise<boolean> {
     postsDB = [];
     return true;
   }

@@ -34,44 +34,44 @@ const canBeDownloaded = body('canBeDownloaded')
   .isBoolean()
   .withMessage('canBeDownloaded should be boolean')
 
-videosRoutes.get('/', authMiddleware, (req: any, res: any) => {
-  res.send(videosRepository.findAllVideos())
+videosRoutes.get('/', authMiddleware, async (req: any, res: any) => {
+  res.send(await videosRepository.findAllVideos())
 })
 
-videosRoutes.get('/:id', (req: any, res: any) => {
+videosRoutes.get('/:id', async (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findVideo = videosRepository.findVideosById(+req.params.id);
+  const findVideo = await videosRepository.findVideosById(+req.params.id);
   if (!findVideo) {
     res.sendStatus(404);
   }
   res.send(findVideo)
 })
 
-videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsValidation, inputValidationMiddleware, (req: any, res: any) => {
-  res.status(201).send(videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
+videosRoutes.post('/', titleValidation, authorValidation, availableResolutionsValidation, inputValidationMiddleware, async (req: any, res: any) => {
+  res.status(201).send(await videosRepository.createVideo(req.body?.title, req.body?.author, req.body?.availableResolutions));
 })
 
-videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, canBeDownloaded, publicationDate, inputValidationMiddleware, (req: any, res: any) => {
+videosRoutes.put('/:id', titleValidation, authorValidation, availableResolutionsValidation, minAgeRestriction, canBeDownloaded, publicationDate, inputValidationMiddleware, async (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findVideo = videosRepository.findVideosById(+req.params.id);
+  const findVideo = await videosRepository.findVideosById(+req.params.id);
   if (!findVideo) {
     res.sendStatus(404);
   }
-  const updatedVideo = videosRepository.updateVideo(+req.params.id, req.body)
+  const updatedVideo = await videosRepository.updateVideo(+req.params.id, req.body)
   if (updatedVideo) {
     res.sendStatus(204);
   }
 })
 
-videosRoutes.delete('/:id', (req: any, res: any) => {
+videosRoutes.delete('/:id', async (req: any, res: any) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  if (videosRepository.deleteVideo(+req.params.id)) {
+  if (await videosRepository.deleteVideo(+req.params.id)) {
       res.send(204);
   }
   res.sendStatus(404);

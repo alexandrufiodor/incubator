@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { blogsRepository } from '../repositories/blogs-repository';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
+import { blogsDbRepository } from '../repositories/blogs-db-repository';
 
 export const blogsRoutes = Router();
 
@@ -28,40 +29,40 @@ const websiteUrlValidation = body('websiteUrl')
     .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
     .withMessage('Invalid URL format')
 
-blogsRoutes.get('/', (req, res) => {
-  res.send(blogsRepository.findAllBlogs())
+blogsRoutes.get('/', async (req, res) => {
+  res.send(await blogsDbRepository.findAllBlogs())
 });
-blogsRoutes.get('/:id', (req, res) => {
+blogsRoutes.get('/:id', async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findBlog = blogsRepository.findBlogById(req.params.id);
+  const findBlog = await blogsDbRepository.findBlogById(req.params.id);
   if (!findBlog) {
     res.sendStatus(404);
   }
   res.send(findBlog)
 })
-blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, (req, res) => {
-  res.status(201).send(blogsRepository.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
+blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
+  res.status(201).send(await blogsDbRepository.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
 })
-blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, (req, res) => {
+blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findBlog = blogsRepository.findBlogById(req.params.id);
+  const findBlog = await blogsDbRepository.findBlogById(req.params.id);
   if (!findBlog) {
     res.sendStatus(404);
   }
-  const updatedBlog = blogsRepository.updateBlog(req.params.id, req.body)
+  const updatedBlog = await blogsDbRepository.updateBlog(req.params.id, req.body)
   if (updatedBlog) {
     res.sendStatus(204);
   }
 })
-blogsRoutes.delete('/:id',authMiddleware, (req, res) => {
+blogsRoutes.delete('/:id',authMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  if (blogsRepository.deleteBlog(req.params.id)) {
+  if (await blogsDbRepository.deleteBlog(req.params.id)) {
     res.send(204);
   }
   res.sendStatus(404);

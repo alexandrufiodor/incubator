@@ -1,22 +1,21 @@
-type blog = {
+type BlogType = {
   id: string,
   name: string,
   description: string,
   websiteUrl: string
 }
 
-export let blogsDB: Array<blog> = []
+export let blogsDB: Array<BlogType> = []
 
 export const blogsRepository = {
-  findAllBlogs() {
+  async findAllBlogs(): Promise<Array<BlogType>> {
     return blogsDB;
   },
-  findBlogById(id: string) {
-    const blogs = blogsDB.find(blog => blog.id === id)
-    return blogs;
+  async findBlogById(id: string):  Promise<BlogType | undefined> {
+    return blogsDB.find(blog => blog.id === id);
   },
-  createBlog(name: string, description: string, websiteUrl: string) {
-    const newBlog: blog = {
+  async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
+    const newBlog: BlogType = {
       id: (new Date()).toISOString(),
       name,
       description,
@@ -25,11 +24,11 @@ export const blogsRepository = {
     blogsDB = [...blogsDB, newBlog]
     return newBlog;
   },
-  updateBlog(id: string, blog: {
+  async updateBlog(id: string, blog: {
     name: string,
     description: string,
     websiteUrl: string,
-  }) {
+  }): Promise<Array<BlogType>> {
     const index = blogsDB.findIndex(blog => blog.id === id);
     if (index !== -1) {
       blogsDB[index] = {
@@ -39,7 +38,7 @@ export const blogsRepository = {
     }
     return blogsDB;
   },
-  deleteBlog(id: string) {
+  async deleteBlog(id: string): Promise<boolean> {
       for (let i = 0; i < blogsDB.length; i++) {
         if (blogsDB[i].id === id) {
           blogsDB.splice(i, 1);
@@ -48,7 +47,7 @@ export const blogsRepository = {
       }
       return false;
     },
-  deleteAllBlogs() {
+  async deleteAllBlogs(): Promise<boolean> {
     blogsDB = [];
     return true;
   }

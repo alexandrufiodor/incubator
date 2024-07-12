@@ -1,5 +1,5 @@
 type availableResolutions = Array<string>
-type video = {
+type VideoType = {
   id: number,
   title: string,
   author: string,
@@ -10,19 +10,19 @@ type video = {
   availableResolutions: availableResolutions,
 }
 
-export let videosDB: Array<video> = []
+export let videosDB: Array<VideoType> = []
 
 export const videosRepository = {
-  findAllVideos() {
-    return videosDB
+  async findAllVideos(): Promise<Array<VideoType>> {
+    return videosDB;
   },
-  findVideosById(id: number) {
+  async findVideosById(id: number): Promise<VideoType | undefined> {
     return videosDB.find(video => video.id === id);
   },
-  createVideo(title: string, author: string, availableResolutions: availableResolutions) {
+  async createVideo(title: string, author: string, availableResolutions: availableResolutions): Promise<VideoType> {
     const publicationDate = new Date();
     publicationDate.setDate(publicationDate.getDate() + 1);
-    const newVideo: video = {
+    const newVideo: VideoType = {
       id: videosDB?.[videosDB?.length -1]?.id + 1 || 1,
       title,
       author,
@@ -35,13 +35,13 @@ export const videosRepository = {
     videosDB = [...videosDB, newVideo]
     return newVideo;
   },
-  updateVideo(id: number, video: {
+  async updateVideo(id: number, video: {
     title: string,
     author: string,
     availableResolutions: availableResolutions,
     canBeDownloaded: boolean,
     minAgeRestriction: null | number,
-  }) {
+  }): Promise<Array<VideoType>> {
     const index = videosDB.findIndex(video => video.id === id);
     if (index !== -1) {
       videosDB[index] = {
@@ -51,7 +51,7 @@ export const videosRepository = {
     }
     return videosDB;
   },
-  deleteVideo(id: number) {
+  async deleteVideo(id: number): Promise<boolean> {
     for (let i = 0; i < videosDB.length; i++) {
       if (videosDB[i].id === id) {
         videosDB.splice(i, 1);
@@ -60,7 +60,7 @@ export const videosRepository = {
     }
     return false;
   },
-  deleteAllVideos() {
+  async deleteAllVideos() : Promise<boolean> {
     videosDB = [];
     return true;
   }

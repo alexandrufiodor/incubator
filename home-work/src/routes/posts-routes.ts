@@ -39,45 +39,45 @@ const blogIdValidation = body('blogId')
   })
 
 
-postsRoutes.get('/', (req, res) => {
-  res.send(postsRepository.findAllPosts())
+postsRoutes.get('/', async (req, res) => {
+  res.send(await postsRepository.findAllPosts())
 });
-postsRoutes.get('/:id', (req, res) => {
+postsRoutes.get('/:id', async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findPost = postsRepository.findPostById(req.params.id);
+  const findPost = await postsRepository.findPostById(req.params.id);
   if (!findPost) {
     res.sendStatus(404);
   }
   res.send(findPost)
 })
-postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, (req, res) => {
-  const createdPost = postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId)
+postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
+  const createdPost = await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId)
   if (createdPost) {
     res.status(201).send(createdPost);
   } else {
     res.sendStatus(404)
   }
 })
-postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, (req, res) => {
+postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  const findPost = postsRepository.findPostById(req.params.id);
+  const findPost = await postsRepository.findPostById(req.params.id);
   if (!findPost) {
     res.sendStatus(404);
   }
-  const updatedPost = postsRepository.updatePost(req.params.id, req.body)
+  const updatedPost = await postsRepository.updatePost(req.params.id, req.body)
   if (updatedPost) {
     res.sendStatus(204);
   }
 })
-postsRoutes.delete('/:id',authMiddleware, (req, res) => {
+postsRoutes.delete('/:id',authMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
   }
-  if (postsRepository.deletePost(req.params.id)) {
+  if (await postsRepository.deletePost(req.params.id)) {
     res.send(204);
   }
   res.sendStatus(404);

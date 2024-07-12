@@ -20,7 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "express-validator": "^7.1.0"
+    "express-validator": "^7.1.0",
+    "mongodb": "^6.7.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
