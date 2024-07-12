@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { postsRepository } from '../repositories/posts-repository';
 import { blogsRepository } from '../repositories/blogs-repository';
+import { blogsDbRepository } from '../repositories/blogs-db-repository';
 
 export const postsRoutes = Router();
 
@@ -31,7 +32,7 @@ const blogIdValidation = body('blogId')
   .notEmpty()
   .withMessage('blogId field is required.')
   .custom((value) => {
-    const blog = blogsRepository.findBlogById(value);
+    const blog = blogsDbRepository.findBlogById(value);
     if (!blog) {
       return Promise.reject('Blog with this blogId does not exist');
     }
