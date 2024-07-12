@@ -62,7 +62,7 @@ postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidatio
     res.sendStatus(404)
   }
 })
-postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, inputValidationMiddleware, async (req, res) => {
+postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
