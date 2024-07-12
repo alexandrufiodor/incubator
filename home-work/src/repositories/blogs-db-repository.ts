@@ -51,7 +51,7 @@ export const blogsDbRepository = {
     }
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
-    const blog: any = await clientDB.collection<BlogType>('blogs').insertOne({
+    await clientDB.collection<BlogType>('blogs').insertOne({
       id: new ObjectId().toString(),
       name,
       description,
@@ -69,15 +69,15 @@ export const blogsDbRepository = {
     };
   },
   async updateBlog(id: string, blog: Omit<BlogType, "id" | "createdAt" | "isMembership">): Promise<Array<BlogType>> {
-    const updatedBlog: any = await clientDB.collection<BlogType>('blogs').updateOne({  id }, {...blog})
+    const updatedBlog: any = await clientDB.collection<BlogType>('blogs').updateOne({  id }, {"$set": {...blog}})
     return updatedBlog;
   },
   async deleteBlog(id: string): Promise<boolean> {
       const deletedBlog: any = await clientDB.collection<BlogType>('blogs').deleteOne({  id });
-      return deletedBlog === 1;
+      return deletedBlog?.deletedCount === 1;
     },
   async deleteAllBlogs(): Promise<boolean> {
     const deletedBlogs: any = await clientDB.collection<BlogType>('blogs').deleteMany({});
-    return deletedBlogs === 1;
+    return deletedBlogs?.acknowledged;
   }
 }

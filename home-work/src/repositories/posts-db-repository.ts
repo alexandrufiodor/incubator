@@ -40,31 +40,32 @@ export const postsRepository = {
     return null;
   },
   async createPost(title: string, shortDescription: string, content: string): Promise<PostType | undefined> {
-    // const findBlog = await blogsRepository.findBlogById(blogId)
-    // if (findBlog) {
-    const post: any = await clientDB.collection<PostType>('posts').insertOne({
+    await clientDB.collection<PostType>('posts').insertOne({
       id: new ObjectId().toString(),
       title,
       shortDescription,
       content,
-      // blogId,
-      // blogName: findBlog?.name
     });
-    return post;
-    // }
+    return {
+      id: new ObjectId().toString(),
+      title,
+      shortDescription,
+      content,
+    };
   },
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string
   }): Promise<Array<PostType> | undefined> {
-    const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({  id }, {...post})
+    const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({  id }, {"$set": {...post}})
     return updatedPost;
   },
   async deletePost(id: string) : Promise<boolean> {
     const deletedPost: any = await clientDB.collection<PostType>('posts').deleteOne({  id });
-    return deletedPost === 1;
+    return deletedPost?.deletedCount === 1;
   },
   async deleteAllPosts(): Promise<boolean> {
-    const deletedBlogs: any = await clientDB.collection<PostType>('posts').deleteMany({});
-    return deletedBlogs === 1;
+    const deletedPosts: any = await clientDB.collection<PostType>('posts').deleteMany({});
+    console.log('deletedBlogs', deletedPosts);
+    return deletedPosts?.acknowledged;
   }
 }
