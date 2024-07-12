@@ -45,12 +45,10 @@ postsRoutes.get('/', async (req, res) => {
 postsRoutes.get('/:id', async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
-    return
   }
   const findPost = await postsRepository.findPostById(req.params.id);
   if (!findPost) {
     res.sendStatus(404);
-    return
   }
   res.send(findPost)
 })
@@ -65,12 +63,10 @@ postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidatio
 postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
-    return
   }
   const findPost = await postsRepository.findPostById(req.params.id);
   if (!findPost) {
     res.sendStatus(404);
-    return
   }
   const updatedPost = await postsRepository.updatePost(req.params.id, req.body)
   if (updatedPost) {
@@ -80,11 +76,9 @@ postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidat
 postsRoutes.delete('/:id',authMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
-    return
   }
   if (await postsRepository.deletePost(req.params.id)) {
     res.send(204);
-    return
   }
   res.sendStatus(404);
 })

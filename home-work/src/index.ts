@@ -11,7 +11,7 @@ const app = express();
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
 
-app.use('/api/videos', videosRoutes);
+// app.use('/api/videos', videosRoutes);
 app.use('/api/blogs', blogsRoutes);
 app.use('/api/posts', postsRoutes);
 app.delete('/api/testing/all-data', async (req, res) => {
