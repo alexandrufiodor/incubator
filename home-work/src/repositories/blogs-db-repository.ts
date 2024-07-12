@@ -52,8 +52,14 @@ export const blogsDbRepository = {
       createdAt: new Date().toISOString(),
       isMembership: false,
     });
-    delete blog.insertedId;
-    return blog;
+    return {
+      id: new ObjectId().toString(),
+      name,
+      description,
+      websiteUrl,
+      createdAt: new Date().toISOString(),
+      isMembership: false,
+    };
   },
   async updateBlog(id: string, blog: Omit<BlogType, "id" | "createdAt" | "isMembership">): Promise<Array<BlogType>> {
     const updatedBlog: any = await clientDB.collection<BlogType>('blogs').updateOne({  id }, {...blog})
