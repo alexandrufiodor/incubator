@@ -7,7 +7,6 @@ type BlogType = {
   description: string,
   websiteUrl: string
   isMembership: boolean
-  acknowledged: boolean
   createdAt: string
 }
 
@@ -31,6 +30,8 @@ export const blogsDbRepository = {
       }
       // @ts-ignore
       delete returnedBlog._id;
+      // @ts-ignore
+      delete returnedBlog.acknowledged;
       return returnedBlog
     });
   },
@@ -46,7 +47,6 @@ export const blogsDbRepository = {
       websiteUrl,
       createdAt: new Date().toISOString(),
       isMembership: false,
-      acknowledged: false,
     });
     delete blog.insertedId;
     return blog;
