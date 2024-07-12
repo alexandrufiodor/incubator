@@ -3,11 +3,9 @@ import { videosRoutes } from './routes/videos-routes';
 import { videosRepository } from './repositories/videos-repository';
 import { blogsRoutes } from './routes/blogs-routes';
 import { postsRoutes } from './routes/posts-routes';
-import { postsRepository } from './repositories/posts-repository';
-import { blogsRepository } from './repositories/blogs-repository';
-import { runDB } from './repositories/db';
-import { run } from 'node:test';
+import { postsRepository } from './repositories/posts-db-repository';
 import { blogsDbRepository } from './repositories/blogs-db-repository';
+import { runDB } from './repositories/db';
 const app = express();
 
 const jsonBodyMiddleware = express.json();
