@@ -13,6 +13,7 @@ type PostType = {
 
 type PostDBType = {
   _id: string,
+  id: string,
   title: string,
   shortDescription: string,
   content: string,
@@ -24,8 +25,7 @@ export const postsRepository = {
   async findAllPosts(): Promise<Array<PostType>> {
     return (await clientDB.collection<PostDBType>('posts').find({}).toArray())?.map((post: PostDBType) => {
       const returnedPost = {
-        ...post,
-        id: post._id,
+        ...post
       }
       // @ts-ignore
       delete returnedPost._id;
@@ -33,7 +33,7 @@ export const postsRepository = {
     });
   },
   async findPostById(id: string): Promise<PostType | null> {
-    const blog: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  _id: new ObjectId(id) });
+    const blog: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  id });
     if (blog) {
       return blog;
     }
@@ -42,7 +42,8 @@ export const postsRepository = {
   async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
     const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {
-    const post: any = await clientDB.collection<Omit<PostType, "id">>('posts').insertOne({
+    const post: any = await clientDB.collection<PostType>('posts').insertOne({
+      id: new ObjectId().toString(),
       title,
       shortDescription,
       content,
@@ -55,11 +56,11 @@ export const postsRepository = {
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string, blogId: string
   }): Promise<Array<PostType> | undefined> {
-    const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({  _id: new ObjectId(id) }, {...post})
+    const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({  id }, {...post})
     return updatedPost;
   },
   async deletePost(id: string) : Promise<boolean> {
-    const deletedPost: any = await clientDB.collection<PostType>('posts').deleteOne({  _id: new ObjectId(id) });
+    const deletedPost: any = await clientDB.collection<PostType>('posts').deleteOne({  id });
     return deletedPost === 1;
   },
   async deleteAllPosts(): Promise<boolean> {
