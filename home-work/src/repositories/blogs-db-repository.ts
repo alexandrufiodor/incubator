@@ -25,23 +25,30 @@ type BlogDBType = {
 export const blogsDbRepository = {
   async findAllBlogs(): Promise<Array<BlogType>> {
     return (await clientDB.collection<BlogDBType>('blogs').find({}).toArray())?.map((blog: BlogDBType) => {
-      const returnedBlog = {
-        ...blog
+      return {
+        id: blog?.id,
+        name: blog?.name,
+        description: blog?.description,
+        websiteUrl: blog?.websiteUrl,
+        isMembership: blog?.isMembership,
+        createdAt: blog?.createdAt
       }
-      // @ts-ignore
-      delete returnedBlog._id;
-      // @ts-ignore
-      delete returnedBlog.acknowledged;
-      return returnedBlog
     });
   },
-  async findBlogById(id: string):  Promise<BlogType | null> {
+  async findBlogById(id: string): Promise<BlogType | null> {
     const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ id });
-    // @ts-ignore
-    delete blog._id;
-    // @ts-ignore
-    delete blog.acknowledged;
-    return blog;
+    if (blog){
+      return {
+        id: blog?.id,
+        name: blog?.name,
+        description: blog?.description,
+        websiteUrl: blog?.websiteUrl,
+        isMembership: blog?.isMembership,
+        createdAt: blog?.createdAt
+      };
+    } else {
+      return null;
+    }
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
     const blog: any = await clientDB.collection<BlogType>('blogs').insertOne({

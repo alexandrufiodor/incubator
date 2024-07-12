@@ -32,7 +32,6 @@ blogsRoutes.get('/', async (req, res) => {
   res.send(await blogsDbRepository.findAllBlogs())
 });
 blogsRoutes.get('/:id', async (req, res) => {
-  console.log('test', req?.params?.id);
   if (!req?.params?.id) {
     res.sendStatus(404);
   }
