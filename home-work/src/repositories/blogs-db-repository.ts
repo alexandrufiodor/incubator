@@ -43,7 +43,7 @@ export const blogsDbRepository = {
       description,
       websiteUrl,
       createdAt: new Date().toISOString(),
-      isMembership: true,
+      isMembership: false,
     });
     return blog;
   },
