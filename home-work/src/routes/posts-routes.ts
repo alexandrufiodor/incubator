@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
-import { postsRepository } from '../repositories/posts-repository';
-import { blogsRepository } from '../repositories/blogs-repository';
+import { postsRepository } from '../repositories/posts-db-repository';
 import { blogsDbRepository } from '../repositories/blogs-db-repository';
 
 export const postsRoutes = Router();
