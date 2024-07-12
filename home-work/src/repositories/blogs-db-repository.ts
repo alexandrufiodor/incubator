@@ -13,6 +13,7 @@ type BlogType = {
 
 type BlogDBType = {
   _id: string,
+  insertedId: string,
   id: string,
   name: string,
   description: string,
@@ -35,10 +36,7 @@ export const blogsDbRepository = {
   },
   async findBlogById(id: string):  Promise<BlogType | null> {
     const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ id });
-    if (blog) {
-      return blog;
-    }
-    return null;
+    return blog;
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
     const blog: any = await clientDB.collection<BlogType>('blogs').insertOne({
@@ -50,6 +48,7 @@ export const blogsDbRepository = {
       isMembership: false,
       acknowledged: false,
     });
+    delete blog.insertedId;
     return blog;
   },
   async updateBlog(id: string, blog: Omit<BlogType, "id" | "createdAt" | "isMembership">): Promise<Array<BlogType>> {

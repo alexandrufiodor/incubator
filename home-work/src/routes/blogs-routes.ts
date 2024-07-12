@@ -32,12 +32,14 @@ blogsRoutes.get('/', async (req, res) => {
   res.send(await blogsDbRepository.findAllBlogs())
 });
 blogsRoutes.get('/:id', async (req, res) => {
-  if (!req.params.id) {
+  console.log('test', req?.params?.id);
+  if (!req?.params?.id) {
     res.sendStatus(404);
   }
   const findBlog = await blogsDbRepository.findBlogById(req.params.id);
   if (!findBlog) {
     res.sendStatus(404);
+    return;
   }
   res.send(findBlog)
 })
@@ -45,12 +47,14 @@ blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, web
   res.status(201).send(await blogsDbRepository.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
 })
 blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, async (req, res) => {
-  if (!req.params.id) {
+  if (!req?.params?.id) {
     res.sendStatus(404);
+    return
   }
   const findBlog = await blogsDbRepository.findBlogById(req.params.id);
   if (!findBlog) {
     res.sendStatus(404);
+    return
   }
   const updatedBlog = await blogsDbRepository.updateBlog(req.params.id, req.body)
   if (updatedBlog) {
@@ -60,9 +64,11 @@ blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, w
 blogsRoutes.delete('/:id',authMiddleware, async (req, res) => {
   if (!req.params.id) {
     res.sendStatus(404);
+    return
   }
   if (await blogsDbRepository.deleteBlog(req.params.id)) {
-    res.send(204);
+    res.sendStatus(204);
+    return
   }
   res.sendStatus(404);
 })
