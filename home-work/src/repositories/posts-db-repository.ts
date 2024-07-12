@@ -3,7 +3,7 @@ import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
 
 type PostType = {
-  id: string,
+  id?: string,
   title: string,
   shortDescription: string,
   content: string,
@@ -47,7 +47,6 @@ export const postsRepository = {
       content,
     });
     return {
-      id: new ObjectId().toString(),
       title,
       shortDescription,
       content,
