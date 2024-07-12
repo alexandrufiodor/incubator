@@ -1,4 +1,5 @@
 import { clientDB } from './db';
+import { ObjectId } from 'mongodb';
 
 type BlogType = {
   id: string,
@@ -31,7 +32,7 @@ export const blogsDbRepository = {
     });
   },
   async findBlogById(id: string):  Promise<BlogType | null> {
-    const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ id });
+    const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ _id: new ObjectId(id) });
     if (blog) {
       return blog;
     }
@@ -48,11 +49,11 @@ export const blogsDbRepository = {
     return blog;
   },
   async updateBlog(id: string, blog: Omit<BlogType, "id" | "createdAt" | "isMembership">): Promise<Array<BlogType>> {
-    const updatedBlog: any = await clientDB.collection<BlogType>('blogs').updateOne({ id }, {...blog})
+    const updatedBlog: any = await clientDB.collection<BlogType>('blogs').updateOne({  _id: new ObjectId(id) }, {...blog})
     return updatedBlog;
   },
   async deleteBlog(id: string): Promise<boolean> {
-      const deletedBlog: any = await clientDB.collection<BlogType>('blogs').deleteOne({ id });
+      const deletedBlog: any = await clientDB.collection<BlogType>('blogs').deleteOne({  _id: new ObjectId(id) });
       return deletedBlog === 1;
     },
   async deleteAllBlogs(): Promise<boolean> {
