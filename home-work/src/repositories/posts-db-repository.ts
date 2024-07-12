@@ -7,8 +7,8 @@ type PostType = {
   title: string,
   shortDescription: string,
   content: string,
-  blogId: string,
-  blogName: string
+  // blogId: string,
+  // blogName: string
 }
 
 type PostDBType = {
@@ -17,8 +17,8 @@ type PostDBType = {
   title: string,
   shortDescription: string,
   content: string,
-  blogId: string,
-  blogName: string
+  // blogId: string,
+  // blogName: string
 }
 
 export const postsRepository = {
@@ -39,22 +39,22 @@ export const postsRepository = {
     }
     return null;
   },
-  async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
-    const findBlog = await blogsRepository.findBlogById(blogId)
-    if (findBlog) {
+  async createPost(title: string, shortDescription: string, content: string): Promise<PostType | undefined> {
+    // const findBlog = await blogsRepository.findBlogById(blogId)
+    // if (findBlog) {
     const post: any = await clientDB.collection<PostType>('posts').insertOne({
       id: new ObjectId().toString(),
       title,
       shortDescription,
       content,
-      blogId,
-      blogName: findBlog?.name
+      // blogId,
+      // blogName: findBlog?.name
     });
     return post;
-    }
+    // }
   },
   async updatePost(id: string, post: {
-    title: string, shortDescription: string, content: string, blogId: string
+    title: string, shortDescription: string, content: string
   }): Promise<Array<PostType> | undefined> {
     const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({  id }, {...post})
     return updatedPost;
