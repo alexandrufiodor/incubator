@@ -34,9 +34,15 @@ export const postsRepository = {
     });
   },
   async findPostById(id: string): Promise<PostType | null> {
-    const blog: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  _id: new ObjectId(id) });
-    if (blog) {
-      return blog;
+    const post: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  _id: new ObjectId(id) });
+    if (post) {
+      return {
+        // @ts-ignore
+        id: post._id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+      };
     }
     return null;
   },
