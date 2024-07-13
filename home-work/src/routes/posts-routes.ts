@@ -60,6 +60,11 @@ postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidat
     res.sendStatus(404);
     return;
   }
+  const findPost = await postsRepository.findPostById(req.params.id);
+  if (!findPost) {
+    res.sendStatus(404);
+    return;
+  }
   const updatedPost = await postsRepository.updatePost(req.params.id, req.body)
   if (updatedPost) {
     res.sendStatus(204);

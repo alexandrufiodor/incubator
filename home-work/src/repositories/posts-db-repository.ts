@@ -3,7 +3,7 @@ import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
 
 type PostType = {
-  id?: string,
+  id: string,
   title: string,
   shortDescription: string,
   content: string,
@@ -40,12 +40,16 @@ export const postsRepository = {
     return null;
   },
   async createPost(title: string, shortDescription: string, content: string): Promise<PostType | undefined> {
+    // const findBlog = await blogsRepository.findBlogById(blogId)
+    // if (findBlog) {
     const newId = new ObjectId().toString();
-    await clientDB.collection<PostType>('posts').insertOne({
+    const post: any = await clientDB.collection<PostType>('posts').insertOne({
       id: newId,
       title,
       shortDescription,
       content,
+      // blogId,
+      // blogName: findBlog?.name
     });
     return {
       id: newId,
@@ -53,6 +57,7 @@ export const postsRepository = {
       shortDescription,
       content,
     };
+    // }
   },
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string
