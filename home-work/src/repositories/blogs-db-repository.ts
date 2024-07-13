@@ -36,7 +36,7 @@ export const blogsDbRepository = {
     });
   },
   async findBlogById(id: string): Promise<BlogType | null> {
-    const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ id });
+    const blog: BlogType | null  = await clientDB.collection<BlogType>('blogs').findOne({ _id: new ObjectId(id) });
     if (blog){
       return {
         id: blog?.id,

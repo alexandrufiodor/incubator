@@ -33,7 +33,7 @@ export const postsRepository = {
     });
   },
   async findPostById(id: string): Promise<PostType | null> {
-    const blog: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  id });
+    const blog: PostType | null  = await clientDB.collection<PostType>('posts').findOne({  _id: new ObjectId(id) });
     if (blog) {
       return blog;
     }
