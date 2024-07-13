@@ -48,7 +48,7 @@ postsRoutes.get('/:id', async (req, res) => {
   res.send(findPost)
 })
 postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
-  const createdPost = await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, )
+  const createdPost = await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId)
   if (createdPost) {
     res.status(201).send(createdPost);
   } else {
