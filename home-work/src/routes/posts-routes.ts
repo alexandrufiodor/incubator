@@ -29,7 +29,13 @@ const contentValidation = body('content')
   .withMessage('content length should be from 0 to 1000 symbols');
 const blogIdValidation = body('blogId')
   .notEmpty()
-  .withMessage('blogId field is required.')
+  .withMessage('blogId field is required.').custom(async (value) => {
+    const blog = await blogsDbRepository.findBlogById(value);
+    if (!blog) {
+      return Promise.reject('Blog with this blogId does not exist');
+    }
+    return true
+  })
 
 
 postsRoutes.get('/', async (req, res) => {
