@@ -7,8 +7,8 @@ type PostType = {
   title: string,
   shortDescription: string,
   content: string,
-  // blogId: string,
-  // blogName: string
+  blogId: string,
+  blogName: string
 }
 
 type PostDBType = {
@@ -17,8 +17,8 @@ type PostDBType = {
   title: string,
   shortDescription: string,
   content: string,
-  // blogId: string,
-  // blogName: string
+  blogId: string,
+  blogName: string
 }
 
 export const postsRepository = {
@@ -42,27 +42,31 @@ export const postsRepository = {
         title: post.title,
         shortDescription: post.shortDescription,
         content: post.content,
+        blogId: post.blogId,
+        blogName: post.blogName
       };
     }
     return null;
   },
-  async createPost(title: string, shortDescription: string, content: string): Promise<PostType | undefined> {
-    // const findBlog = await blogsRepository.findBlogById(blogId)
-    // if (findBlog) {
+  async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
+    const findBlog = await blogsRepository.findBlogById(blogId)
+    if (findBlog) {
     const post: any = await clientDB.collection<PostType>('posts').insertOne({
       title,
       shortDescription,
       content,
-      // blogId,
-      // blogName: findBlog?.name
+      blogId,
+      blogName: findBlog?.name
     });
     return {
       id: post?.insertedId?.toString(),
       title,
       shortDescription,
       content,
+      blogId,
+      blogName: findBlog?.name
     };
-    // }
+    }
   },
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string
