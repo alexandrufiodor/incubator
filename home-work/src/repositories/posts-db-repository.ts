@@ -40,13 +40,15 @@ export const postsRepository = {
     return null;
   },
   async createPost(title: string, shortDescription: string, content: string): Promise<PostType | undefined> {
+    const newId = new ObjectId().toString();
     await clientDB.collection<PostType>('posts').insertOne({
-      id: new ObjectId().toString(),
+      id: newId,
       title,
       shortDescription,
       content,
     });
     return {
+      id: newId,
       title,
       shortDescription,
       content,

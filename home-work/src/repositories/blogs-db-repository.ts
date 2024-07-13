@@ -51,8 +51,9 @@ export const blogsDbRepository = {
     }
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
+    const newId = new ObjectId().toString();
     await clientDB.collection<BlogType>('blogs').insertOne({
-      id: new ObjectId().toString(),
+      id: newId,
       name,
       description,
       websiteUrl,
@@ -60,7 +61,7 @@ export const blogsDbRepository = {
       isMembership: false,
     });
     return {
-      id: new ObjectId().toString(),
+      id: newId,
       name,
       description,
       websiteUrl,
