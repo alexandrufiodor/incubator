@@ -51,21 +51,21 @@ export const postsRepository = {
   async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
     const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {
-    const post: any = await clientDB.collection<PostType>('posts').insertOne({
-      title,
-      shortDescription,
-      content,
-      blogId,
-      blogName: findBlog?.name
-    });
-    return {
-      id: post?.insertedId?.toString(),
-      title,
-      shortDescription,
-      content,
-      blogId,
-      blogName: findBlog?.name
-    };
+      const post: any = await clientDB.collection<PostType>('posts').insertOne({
+        title,
+        shortDescription,
+        content,
+        blogId,
+        blogName: findBlog?.name
+      });
+      return {
+        id: post?.insertedId?.toString(),
+        title,
+        shortDescription,
+        content,
+        blogId,
+        blogName: findBlog?.name
+      };
     }
   },
   async updatePost(id: string, post: {
