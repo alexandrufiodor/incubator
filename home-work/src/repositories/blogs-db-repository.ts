@@ -52,11 +52,12 @@ export const blogsDbRepository = {
     }
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
+    const createdAt =  new Date().toISOString();
     const blog = await clientDB.collection<BlogType>('blogs').insertOne({
       name,
       description,
       websiteUrl,
-      createdAt: new Date().toISOString(),
+      createdAt,
       isMembership: false,
     });
     return {
@@ -64,7 +65,7 @@ export const blogsDbRepository = {
       name,
       description,
       websiteUrl,
-      createdAt: new Date().toISOString(),
+      createdAt,
       isMembership: false,
     };
   },
