@@ -2,6 +2,7 @@ import { blogsRepository } from './blogs-repository';
 import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
 import { verifyId } from '../utils/utils';
+import { blogsDbRepository } from './blogs-db-repository';
 
 type PostType = {
   id?: string,
@@ -9,6 +10,7 @@ type PostType = {
   shortDescription: string,
   content: string,
   blogId: string,
+  createdAt?: string,
   blogName: string
 }
 
@@ -52,13 +54,15 @@ export const postsRepository = {
     return null;
   },
   async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
-    const findBlog = await blogsRepository.findBlogById(blogId)
+    const findBlog = await blogsDbRepository.findBlogById(blogId)
     if (findBlog) {
-      const post: any = await clientDB.collection<PostType>('posts').insertOne({
+      const createdAt =  new Date().toISOString();
+      const post = await clientDB.collection<PostType>('posts').insertOne({
         title,
         shortDescription,
         content,
         blogId,
+        createdAt,
         blogName: findBlog?.name
       });
       return {

@@ -54,8 +54,7 @@ postsRoutes.get('/:id', async (req, res) => {
   res.send(findPost)
 })
 postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
-  const createdPost = await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId)
-  res.status(201).send(createdPost);
+  res.status(201).send(await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
 })
 postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
@@ -74,6 +73,10 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
     res.sendStatus(404);
     return
   }
-  await postsRepository.deletePost(req.params.id?.toString());
-  res.sendStatus(204)
+  const deletedPost = await postsRepository.deletePost(req.params.id?.toString());
+  if (deletedPost) {
+    res.sendStatus(204)
+    return;
+  }
+  res.sendStatus(404);
 })
