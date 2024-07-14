@@ -74,10 +74,6 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
     res.sendStatus(404);
     return
   }
-  const deletedPost = await postsRepository.deletePost(req.params.id?.toString());
-  if (deletedPost) {
-    res.sendStatus(204)
-    return;
-  }
-  res.sendStatus(404);
+  await postsRepository.deletePost(req.params.id?.toString());
+  res.sendStatus(204)
 })
