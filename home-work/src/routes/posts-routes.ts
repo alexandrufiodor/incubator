@@ -39,7 +39,7 @@ export const blogIdValidation = body('blogId')
 
 
 postsRoutes.get('/', async (req, res) => {
-  res.send(await postsServices.findAllPosts(req?.query?.paseSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createAt', req?.query?.sortDirection?.toString() || 'desc'))
+  res.send(await postsServices.findAllPosts(req?.query?.paseSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc'))
 });
 postsRoutes.get('/:id', async (req, res) => {
   if (!req?.params?.id) {

@@ -31,7 +31,7 @@ export const blogsRepository = {
     const name = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {}
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, blogCollection, name);
     // @ts-ignore
-    const blogs: Array<BlogType> = (await blogCollection.find(name).sort({[`${sortBy}`]: sortDirection == 'desc' ? 1 : -1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((blog: BlogDBType) => {
+    const blogs: Array<BlogType> = (await blogCollection.find(name).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((blog: BlogDBType) => {
       return {
         id: blog?._id,
         name: blog?.name,
