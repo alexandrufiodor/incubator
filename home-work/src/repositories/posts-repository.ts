@@ -1,7 +1,20 @@
-import { blogsRepository } from './blogs-repository';
+import { clientDB } from './db';
+import { ObjectId } from 'mongodb';
+import { verifyId } from '../utils/utils';
 
-type PostType = {
-  id: string,
+export type PostType = {
+  id?: string,
+  title: string,
+  shortDescription: string,
+  content: string,
+  blogId: string,
+  createdAt?: string,
+  blogName: string
+}
+
+export type PostDBType = {
+  _id: string,
+  insertedId?: string,
   title: string,
   shortDescription: string,
   content: string,
@@ -9,57 +22,39 @@ type PostType = {
   blogName: string
 }
 
-export let postsDB: Array<PostType> = []
-
 export const postsRepository = {
   async findAllPosts(): Promise<Array<PostType>> {
-    return postsDB;
-  },
-  async findPostById(id: string): Promise<PostType | undefined> {
-    return postsDB.find((post:PostType) => post.id === id);
-  },
-  async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
-    const findBlog = await blogsRepository.findBlogById(blogId)
-    if (findBlog) {
-      const newPost: PostType = {
-        id: (new Date()).toISOString(),
-        title,
-        shortDescription,
-        content,
-        blogId,
-        blogName: findBlog?.name
+    return (await clientDB.collection<PostDBType>('posts').find({}).toArray())?.map((post: PostDBType) => {
+      const returnedPost = {
+        ...post,
+        id: post._id
       }
-      postsDB = [...postsDB, newPost]
-      return newPost;
-    }
+      // @ts-ignore
+      delete returnedPost._id;
+      return returnedPost
+    });
+  },
+  async findPostById(id: string): Promise<PostType | null> {
+      return await clientDB.collection<PostType>('posts').findOne({ _id: new ObjectId(id) });
+  },
+  async createPost(post: PostType): Promise<{ insertedId: string }> {
+      const newPost = await clientDB.collection<PostType>('posts').insertOne({
+        ...post
+      })
+      return { insertedId: newPost?.insertedId?.toString() };
   },
   async updatePost(id: string, post: {
-    title: string, shortDescription: string, content: string, blogId: string
-  }): Promise<Array<PostType> | undefined> {
-    const findBlog = await blogsRepository.findBlogById(post?.blogId)
-    if (findBlog) {
-      const index = postsDB.findIndex(post => post.id === id);
-      if (index !== -1) {
-        postsDB[index] = {
-          ...postsDB[index],
-          ...post,
-          blogName: findBlog?.name
-        };
-      }
-      return postsDB;
-    }
+    title: string, shortDescription: string, content: string
+  }): Promise<Array<PostType> | undefined | null> {
+      const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({ _id: new ObjectId(id) }, { "$set": { ...post } })
+      return updatedPost;
   },
   async deletePost(id: string) : Promise<boolean> {
-    for (let i = 0; i < postsDB.length; i++) {
-      if (postsDB[i].id === id) {
-        postsDB.splice(i, 1);
-        return true;
-      }
-    }
-    return false;
+      const deletedPost: any = await clientDB.collection<PostType>('posts').deleteOne({ _id: new ObjectId(id) });
+      return deletedPost?.deletedCount === 1;
   },
   async deleteAllPosts(): Promise<boolean> {
-    postsDB = [];
-    return true;
+    const deletedPosts: any = await clientDB.collection<PostType>('posts').deleteMany({});
+    return deletedPosts?.acknowledged;
   }
 }

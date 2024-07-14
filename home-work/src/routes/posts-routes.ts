@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
-import { postsRepository } from '../repositories/posts-db-repository';
-import { blogsDbRepository } from '../repositories/blogs-db-repository';
+import { blogsRepository } from '../repositories/blogs-repository';
+import { postsServices } from '../domains/posts-services';
 
 export const postsRoutes = Router();
 
@@ -30,7 +30,7 @@ const contentValidation = body('content')
 const blogIdValidation = body('blogId')
   .notEmpty()
   .withMessage('blogId field is required.').custom(async (value) => {
-    const blog = await blogsDbRepository.findBlogById(value);
+    const blog = await blogsRepository.findBlogById(value);
     if (!blog) {
       return Promise.reject('Blog with this blogId does not exist');
     }
@@ -39,14 +39,14 @@ const blogIdValidation = body('blogId')
 
 
 postsRoutes.get('/', async (req, res) => {
-  res.send(await postsRepository.findAllPosts())
+  res.send(await postsServices.findAllPosts())
 });
 postsRoutes.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
   }
-  const findPost = await postsRepository.findPostById(req.params.id);
+  const findPost = await postsServices.findPostById(req.params.id);
   if (!findPost) {
     res.sendStatus(404);
     return;
@@ -54,14 +54,14 @@ postsRoutes.get('/:id', async (req, res) => {
   res.send(findPost)
 })
 postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
-  res.status(201).send(await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
+  res.status(201).send(await postsServices.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
 })
 postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
   }
-  const updatedPost = await postsRepository.updatePost(req.params.id, req.body)
+  const updatedPost = await postsServices.updatePost(req.params.id, req.body)
   if (updatedPost) {
     res.sendStatus(204);
     return;
@@ -73,7 +73,7 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
     res.sendStatus(404);
     return
   }
-  const deletedPost = await postsRepository.deletePost(req.params.id?.toString());
+  const deletedPost = await postsServices.deletePost(req.params.id?.toString());
   if (deletedPost) {
     res.sendStatus(204)
     return;

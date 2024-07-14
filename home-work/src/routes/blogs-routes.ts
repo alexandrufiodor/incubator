@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
-import { blogsDbRepository } from '../repositories/blogs-db-repository';
+import { blogsServices } from '../domains/blogs-services';
 
 export const blogsRoutes = Router();
 
@@ -29,13 +29,13 @@ const websiteUrlValidation = body('websiteUrl')
     .withMessage('Invalid URL format')
 
 blogsRoutes.get('/', async (req, res) => {
-  res.send(await blogsDbRepository.findAllBlogs())
+  res.send(await blogsServices.findAllBlogs())
 });
 blogsRoutes.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
   }
-  const findBlog = await blogsDbRepository.findBlogById(req.params.id);
+  const findBlog = await blogsServices.findBlogById(req.params.id);
   if (!findBlog) {
     res.sendStatus(404);
     return;
@@ -43,14 +43,15 @@ blogsRoutes.get('/:id', async (req, res) => {
   res.send(findBlog)
 })
 blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
-  res.status(201).send(await blogsDbRepository.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
+  res.status(201).send(await blogsServices.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
 })
 blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
   }
-  const updatedBlog = await blogsDbRepository.updateBlog(req.params.id?.toString(), req.body)
+
+  const updatedBlog = await blogsServices.updateBlog(req.params.id?.toString(), req.body)
   if (updatedBlog) {
     res.sendStatus(204);
     return;
@@ -62,7 +63,7 @@ blogsRoutes.delete('/:id', authMiddleware, async (req, res) => {
     res.sendStatus(404);
     return;
   }
-  const deletedBlog = await blogsDbRepository.deleteBlog(req.params.id?.toString());
+  const deletedBlog = await blogsServices.deleteBlog(req.params.id?.toString());
   if (deletedBlog) {
     res.sendStatus(204)
     return;
