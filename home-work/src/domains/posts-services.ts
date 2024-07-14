@@ -6,8 +6,8 @@ import { PostDBType, postsRepository, PostType } from '../repositories/posts-rep
 
 
 export const postsServices = {
-  async findAllPosts(): Promise<Array<PostType>> {
-    return await postsRepository.findAllPosts();
+  async findAllPosts(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string): Promise<Array<PostType>> {
+    return await postsRepository.findAllPosts(pageSize,pageNumber, sortBy, sortDirection);
   },
   async findPostById(id: string): Promise<PostType | null> {
     if (verifyId(id)) {

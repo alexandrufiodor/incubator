@@ -1,6 +1,6 @@
 import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
-import { verifyId } from '../utils/utils';
+import { getPaginationWithFilter, verifyId } from '../utils/utils';
 
 export type PostType = {
   id?: string,
@@ -22,23 +22,31 @@ export type PostDBType = {
   blogName: string
 }
 
+export const postsCollection = clientDB.collection<PostType>('posts');
+
 export const postsRepository = {
-  async findAllPosts(): Promise<Array<PostType>> {
-    return (await clientDB.collection<PostDBType>('posts').find({}).toArray())?.map((post: PostDBType) => {
-      const returnedPost = {
+  async findAllPosts(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string): Promise<any> {
+    const pagination = await getPaginationWithFilter(pageNumber, pageSize, postsCollection, {});
+    //@ts-ignore
+    const posts: Array<PostType> = (await postsCollection.find({}).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: PostDBType) => {
+      return {
         ...post,
         id: post._id
       }
-      // @ts-ignore
-      delete returnedPost._id;
-      return returnedPost
     });
+    return {
+      pagesCount: pagination.totalPages,
+      page: pagination.page,
+      pageSize: pagination.limit,
+      totalCount: pagination.totalItems,
+      items: posts
+    }
   },
   async findPostById(id: string): Promise<PostType | null> {
-      return await clientDB.collection<PostType>('posts').findOne({ _id: new ObjectId(id) });
+      return await postsCollection.findOne({ _id: new ObjectId(id) });
   },
   async createPost(post: PostType): Promise<{ insertedId: string }> {
-      const newPost = await clientDB.collection<PostType>('posts').insertOne({
+      const newPost = await postsCollection.insertOne({
         ...post
       })
       return { insertedId: newPost?.insertedId?.toString() };
@@ -46,15 +54,15 @@ export const postsRepository = {
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string
   }): Promise<Array<PostType> | undefined | null> {
-      const updatedPost: any = await clientDB.collection<PostType>('posts').updateOne({ _id: new ObjectId(id) }, { "$set": { ...post } })
+      const updatedPost: any = await postsCollection.updateOne({ _id: new ObjectId(id) }, { "$set": { ...post } })
       return updatedPost;
   },
   async deletePost(id: string) : Promise<boolean> {
-      const deletedPost: any = await clientDB.collection<PostType>('posts').deleteOne({ _id: new ObjectId(id) });
+      const deletedPost: any = await postsCollection.deleteOne({ _id: new ObjectId(id) });
       return deletedPost?.deletedCount === 1;
   },
   async deleteAllPosts(): Promise<boolean> {
-    const deletedPosts: any = await clientDB.collection<PostType>('posts').deleteMany({});
+    const deletedPosts: any = await postsCollection.deleteMany({});
     return deletedPosts?.acknowledged;
   }
 }

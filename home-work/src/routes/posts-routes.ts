@@ -6,28 +6,28 @@ import { postsServices } from '../domains/posts-services';
 
 export const postsRoutes = Router();
 
-const titleValidation = body('title')
+export const titleValidation = body('title')
   .notEmpty()
   .withMessage('Title field is required.')
   .isString()
   .trim()
   .isLength({min: 1, max: 30 })
   .withMessage('Title length should be from 0 to 30 symbols');
-const shortDescriptionValidation = body('shortDescription')
+export const shortDescriptionValidation = body('shortDescription')
   .notEmpty()
   .withMessage('shortDescription field is required.')
   .isString()
   .trim()
   .isLength({min: 1, max: 100 })
   .withMessage('shortDescription length should be from 0 to 100 symbols');
-const contentValidation = body('content')
+export const contentValidation = body('content')
   .notEmpty()
   .withMessage('content field is required.')
   .isString()
   .trim()
   .isLength({min: 1, max: 1000 })
   .withMessage('content length should be from 0 to 1000 symbols');
-const blogIdValidation = body('blogId')
+export const blogIdValidation = body('blogId')
   .notEmpty()
   .withMessage('blogId field is required.').custom(async (value) => {
     const blog = await blogsRepository.findBlogById(value);
@@ -39,7 +39,7 @@ const blogIdValidation = body('blogId')
 
 
 postsRoutes.get('/', async (req, res) => {
-  res.send(await postsServices.findAllPosts())
+  res.send(await postsServices.findAllPosts(req?.query?.paseSize?.toString() ?? '10', req?.query?.pageNumber?.toString() ?? '1', req?.query?.sortBy?.toString() ?? 'createAt', req?.query?.sortDirection?.toString() ?? 'desc'))
 });
 postsRoutes.get('/:id', async (req, res) => {
   if (!req?.params?.id) {

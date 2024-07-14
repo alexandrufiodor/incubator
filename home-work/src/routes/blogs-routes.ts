@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsServices } from '../domains/blogs-services';
+import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from './posts-routes';
 
 export const blogsRoutes = Router();
 
@@ -41,6 +42,9 @@ blogsRoutes.get('/:id', async (req, res) => {
     return;
   }
   res.send(findBlog)
+})
+blogsRoutes.post('/blogs/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
+  res.status(201).send(await blogsServices.createPostByBlogId(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
 })
 blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
   res.status(201).send(await blogsServices.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));

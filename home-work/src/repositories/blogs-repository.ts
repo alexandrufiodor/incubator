@@ -1,6 +1,7 @@
 import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
 import { getPaginationWithFilter } from '../utils/utils';
+import { PostType } from './posts-repository';
 
 export type BlogType = {
   id?: string,
@@ -21,24 +22,6 @@ export type BlogDBType = {
   isMembership: boolean
   acknowledged: boolean
   createdAt: string
-}
-
-
-const test = {
-  "pagesCount": 0,
-  "page": 0,
-  "pageSize": 0,
-  "totalCount": 0,
-  "items": [
-  {
-    "id": "string",
-    "name": "string",
-    "description": "string",
-    "websiteUrl": "string",
-    "createdAt": "2024-07-14T11:12:37.875Z",
-    "isMembership": true
-  }
-]
 }
 
 export const blogCollection = clientDB.collection<BlogType>('blogs');
