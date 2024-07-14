@@ -19,6 +19,7 @@ export type PostDBType = {
   shortDescription: string,
   content: string,
   blogId: string,
+  createdAt?: string,
   blogName: string
 }
 
@@ -30,7 +31,11 @@ export const postsRepository = {
     //@ts-ignore
     const posts: Array<PostType> = (await postsCollection.find({}).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: PostDBType) => {
       return {
-        ...post,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        blogId: post.blogId,
+        createdAt: post.createdAt,
         id: post._id
       }
     });
