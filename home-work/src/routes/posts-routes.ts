@@ -55,34 +55,28 @@ postsRoutes.get('/:id', async (req, res) => {
 })
 postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   const createdPost = await postsRepository.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId)
-  // if (createdPost) {
-    res.status(201).send(createdPost);
-  // } else {
-  //   res.sendStatus(404)
-  // }
+  res.status(201).send(createdPost);
 })
 postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
   }
-  const findPost = await postsRepository.findPostById(req.params.id);
-  if (!findPost) {
-    res.sendStatus(404);
-    return;
-  }
   const updatedPost = await postsRepository.updatePost(req.params.id, req.body)
   if (updatedPost) {
     res.sendStatus(204);
-  }
-})
-postsRoutes.delete('/:id',authMiddleware, async (req, res) => {
-  if (!req?.params?.id) {
-    res.sendStatus(404);
     return;
   }
-  if (await postsRepository.deletePost(req.params.id)) {
-    res.send(204);
+  res.sendStatus(404);
+})
+postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return
+  }
+  const deletedPost = await postsRepository.deletePost(req.params.id?.toString());
+  if (deletedPost) {
+    res.sendStatus(204)
     return;
   }
   res.sendStatus(404);

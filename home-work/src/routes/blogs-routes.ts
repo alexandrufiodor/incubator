@@ -50,24 +50,22 @@ blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, w
     res.sendStatus(404);
     return
   }
-  const findBlog = await blogsDbRepository.findBlogById(req.params.id);
-  if (!findBlog) {
-    res.sendStatus(404);
-    return
-  }
-  const updatedBlog = await blogsDbRepository.updateBlog(req.params.id, req.body)
+  const updatedBlog = await blogsDbRepository.updateBlog(req.params.id?.toString(), req.body)
   if (updatedBlog) {
     res.sendStatus(204);
+    return;
   }
+  res.sendStatus(404);
 })
-blogsRoutes.delete('/:id',authMiddleware, async (req, res) => {
+blogsRoutes.delete('/:id', authMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
-    return
+    return;
   }
-  if (await blogsDbRepository.deleteBlog(req.params.id)) {
-    res.sendStatus(204);
-    return
+  const deletedBlog = await blogsDbRepository.deleteBlog(req.params.id?.toString());
+  if (deletedBlog) {
+    res.sendStatus(204)
+    return;
   }
   res.sendStatus(404);
 })
