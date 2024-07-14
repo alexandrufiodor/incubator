@@ -29,7 +29,7 @@ export const postsRepository = {
   async findAllPosts(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string): Promise<any> {
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, postsCollection, {});
     //@ts-ignore
-    const posts: Array<PostType> = (await postsCollection.find({}).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: PostDBType) => {
+    const posts: Array<PostType> = (await postsCollection.find({}).sort({[`${sortBy}`]: sortDirection == 'desc' ? 1 : -1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: PostDBType) => {
       return {
         title: post.title,
         shortDescription: post.shortDescription,
