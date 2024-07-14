@@ -2,8 +2,8 @@ import { verifyId } from '../utils/utils';
 import { blogsRepository, BlogType } from '../repositories/blogs-repository';
 
 export const blogsServices = {
-  async findAllBlogs(): Promise<Array<BlogType>> {
-    return await blogsRepository.findAllBlogs();
+  async findAllBlogs(pageSize: string, pageNumber: string, searchNameTerm: string | null, sortBy: string, sortDirection: string): Promise<Array<BlogType>> {
+    return await blogsRepository.findAllBlogs(pageSize, pageNumber, searchNameTerm, sortBy, sortDirection);
   },
   async findBlogById(id: string): Promise<BlogType | null> {
     if (verifyId(id)) {
