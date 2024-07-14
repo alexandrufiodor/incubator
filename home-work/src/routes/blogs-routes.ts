@@ -30,7 +30,7 @@ const websiteUrlValidation = body('websiteUrl')
     .withMessage('Invalid URL format')
 
 blogsRoutes.get('/', async (req, res) => {
-  res.send(await blogsServices.findAllBlogs(req?.query?.paseSize?.toString() ?? '10', req?.query?.pageNumber?.toString() ?? '1', req?.query?.searchNameTerm?.toString() ?? null, req?.query?.sortBy?.toString() ?? 'createAt', req?.query?.sortDirection?.toString() ?? 'desc'))
+  res.send(await blogsServices.findAllBlogs(req?.query?.paseSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.searchNameTerm?.toString() || null, req?.query?.sortBy?.toString() || 'createAt', req?.query?.sortDirection?.toString() || 'desc'))
 });
 blogsRoutes.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
