@@ -46,6 +46,7 @@ export const postsRepository = {
           title: post.title,
           shortDescription: post.shortDescription,
           content: post.content,
+          createdAt: post.createdAt,
           blogId: post.blogId,
           blogName: post.blogName
         };
@@ -70,6 +71,7 @@ export const postsRepository = {
         title,
         shortDescription,
         content,
+        createdAt,
         blogId,
         blogName: findBlog?.name
       };
