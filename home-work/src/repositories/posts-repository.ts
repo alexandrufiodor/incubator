@@ -27,7 +27,6 @@ export const postsCollection = clientDB.collection<PostType>('posts');
 
 export const postsRepository = {
   async findAllPosts(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter = {}): Promise<any> {
-    console.log('filter', filter);
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, postsCollection, filter);
     //@ts-ignore
     const posts: Array<PostType> = (await postsCollection.find(filter).sort({[`${sortBy}`]: sortDirection == 'desc' ? 1 : -1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: PostDBType) => {
