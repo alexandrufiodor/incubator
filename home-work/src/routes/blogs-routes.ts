@@ -43,8 +43,17 @@ blogsRoutes.get('/:id', async (req, res) => {
   }
   res.send(findBlog)
 })
-blogsRoutes.post('/blogs/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
-  res.status(201).send(await blogsServices.createPostByBlogId(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
+blogsRoutes.post('/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, inputValidationMiddleware, async (req, res) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return;
+  }
+  const newPost= await blogsServices.createPostByBlogId(req.body?.title, req.body?.shortDescription, req.body?.content, req?.params?.id?.toString());
+  if (newPost) {
+    res.status(201).send(newPost);
+    return;
+  }
+  res.sendStatus(404);
 })
 blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
   res.status(201).send(await blogsServices.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));

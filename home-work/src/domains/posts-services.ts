@@ -1,8 +1,6 @@
-import { ObjectId } from 'mongodb';
 import { verifyId } from '../utils/utils';
-import { clientDB } from '../repositories/db';
 import { blogsRepository } from '../repositories/blogs-repository';
-import { PostDBType, postsRepository, PostType } from '../repositories/posts-repository';
+import { postsRepository, PostType } from '../repositories/posts-repository';
 
 
 export const postsServices = {

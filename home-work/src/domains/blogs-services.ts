@@ -15,20 +15,22 @@ export const blogsServices = {
   async createPostByBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
     const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {
-    const createdAt =  new Date().toISOString();
-    const post = {
-      title,
-      shortDescription,
-      content,
-      blogId,
-      createdAt,
-      blogName: findBlog?.name
-    }
+      const createdAt =  new Date().toISOString();
+      const post = {
+        title,
+        shortDescription,
+        content,
+        blogId,
+        createdAt,
+        blogName: findBlog?.name
+      }
       const createdPost = await postsRepository.createPost(post)
       return {
         id: createdPost?.insertedId?.toString(),
         ...post
       };
+    } else{
+      return undefined;
     }
   },
   async createBlog(name: string, description: string, websiteUrl: string): Promise<BlogType> {
