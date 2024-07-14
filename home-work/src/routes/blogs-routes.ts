@@ -43,6 +43,13 @@ blogsRoutes.get('/:id', async (req, res) => {
   }
   res.send(findBlog)
 })
+blogsRoutes.get('/:id/posts', async (req, res) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return;
+  }
+  res.send(await blogsServices.findAllPostsByBlogId(req?.query?.paseSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createAt', req?.query?.sortDirection?.toString() || 'desc', req?.params?.id?.toString()))
+});
 blogsRoutes.post('/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);

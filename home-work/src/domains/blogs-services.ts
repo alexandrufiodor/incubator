@@ -12,6 +12,9 @@ export const blogsServices = {
     }
     return null;
   },
+  async findAllPostsByBlogId(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, blogId: string): Promise<Array<BlogType>> {
+    return await postsRepository.findAllPosts(pageSize, pageNumber, sortBy, sortDirection, { blogId });
+  },
   async createPostByBlogId(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
     const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {
