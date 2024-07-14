@@ -33,13 +33,11 @@ export const blogsServices = {
   },
   async deleteBlog(id: string): Promise<boolean> {
     if (verifyId(id)) {
-      const deletedBlog: any = await blogsRepository.deleteBlog(id);
-      return deletedBlog?.deletedCount === 1;
+      return await blogsRepository.deleteBlog(id);
     }
     return false;
   },
   async deleteAllBlogs(): Promise<boolean> {
-    const deletedBlogs: any = await blogsRepository.deleteAllBlogs();
-    return deletedBlogs?.acknowledged;
+    return await blogsRepository.deleteAllBlogs();
   }
 }

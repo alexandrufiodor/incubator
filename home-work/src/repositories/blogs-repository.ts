@@ -65,11 +65,8 @@ export const blogsRepository = {
       return updatedBlog;
   },
   async deleteBlog(id: string): Promise<boolean> {
-      if (verifyId(id)) {
-        const deletedBlog: any = await clientDB.collection<BlogType>('blogs').deleteOne({  _id: new ObjectId(id) });
-        return deletedBlog?.deletedCount === 1;
-      }
-      return false;
+      const deletedBlog: any = await clientDB.collection<BlogType>('blogs').deleteOne({  _id: new ObjectId(id) });
+      return deletedBlog?.deletedCount === 1;
     },
   async deleteAllBlogs(): Promise<boolean> {
     const deletedBlogs: any = await clientDB.collection<BlogType>('blogs').deleteMany({});
