@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 
 export const verifyId = (id: string): boolean => {
   const checkForHexRegExp = new RegExp('^[0-9a-fA-F]{24}$');
@@ -7,11 +8,8 @@ export const verifyId = (id: string): boolean => {
 export  const getPagination = async (reqPage: string, reqLimit: string, collection: any) => {
   const page = parseInt(reqPage, 10) || 1;
   const limit = parseInt(reqLimit, 10) || 10;
-  console.log('limit',typeof limit);
   const offset = (page - 1) * limit;
-  console.log('offset', offset);
   const totalItems = await collection.countDocuments({});
-  console.log('totalItems', totalItems);
   const totalPages = Math.ceil(totalItems / limit);
 
   return { totalItems, page, totalPages, offset, limit };
@@ -26,4 +24,9 @@ export const getPaginationWithFilter = async (reqPage: string, reqLimit: string,
   const totalPages = Math.ceil(totalItems / limit);
 
   return { totalItems, page, totalPages, offset, limit };
+}
+
+
+export async function comparePassword(enteredPassword: string, storedPasswordHash: string): Promise<boolean> {
+  return await bcrypt.compare(enteredPassword, storedPasswordHash);
 }

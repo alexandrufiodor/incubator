@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsServices } from '../domains/blogs-services';
-import { blogIdValidation, contentValidation, shortDescriptionValidation, titleValidation } from './posts-routes';
+import { contentValidation, shortDescriptionValidation, titleValidation } from './posts-routes';
 
 export const blogsRoutes = Router();
 
