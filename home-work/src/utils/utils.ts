@@ -19,7 +19,7 @@ export const getPaginationWithFilter = async (reqPage: string, reqLimit: string,
   const page = parseInt(reqPage, 10) || 1;
   const limit = parseInt(reqLimit, 10) || 10;
   const offset = (page - 1) * limit;
-
+// ee
   const totalItems = await collection.countDocuments(filter);
   const totalPages = Math.ceil(totalItems / limit);
 
