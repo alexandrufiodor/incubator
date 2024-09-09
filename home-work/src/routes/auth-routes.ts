@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { inputValidationMiddleware } from '../middlewares/middlewares';
 import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
-import { comparePassword } from '../utils/utils';
 
 export const authRoutes = Router();
 export const loginValidation = body('login')
@@ -15,6 +14,6 @@ export const loginValidation = body('login')
   })
 
 authRoutes.post( '/', loginValidation, inputValidationMiddleware, async (req, res) => {
-  
+
   res.sendStatus(204)
 })
