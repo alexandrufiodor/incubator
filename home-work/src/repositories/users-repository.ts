@@ -22,12 +22,12 @@ export const usersRepository = {
   async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter ={}): Promise<any> {
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, usersCollection, filter);
     //@ts-ignore
-    const posts: Array<UserType> = (await usersCollection.find(filter).sort({ [`${sortBy}`]: sortDirection == 'desc' ? -1 : 1 }).limit(pagination.limit).skip(pagination.offset).toArray())?.map((post: UserDBType) => {
+    const users: Array<UserType> = (await usersCollection.find(filter).sort({ [`${sortBy}`]: sortDirection == 'desc' ? -1 : 1 }).limit(pagination.limit).skip(pagination.offset).toArray())?.map((user: UserDBType) => {
       return {
-        id: post._id,
-        email: post.email,
-        login: post.login,
-        createdAt: post.createdAt
+        id: user._id,
+        email: user.email,
+        login: user.login,
+        createdAt: user.createdAt
       }
     });
     return {
@@ -35,7 +35,7 @@ export const usersRepository = {
       page: pagination.page,
       pageSize: pagination.limit,
       totalCount: pagination.totalItems,
-      items: posts
+      items: users
     }
   },
   async findUserByLoginOrEmail(loginOrEmail: string): Promise<any> {
@@ -47,7 +47,7 @@ export const usersRepository = {
         id: user?._id,
         login: user?.login,
         email: user?.email,
-        password: user?.password
+        createdAt: user.createdAt
       };
     }
     return null
@@ -56,7 +56,12 @@ export const usersRepository = {
     const newUser = await usersCollection.insertOne({
       ...user
     })
-    return { id: newUser?.insertedId?.toString(), ...user };
+    return {
+      id: newUser?.insertedId?.toString(),
+      login: user?.login,
+      email: user?.email,
+      createdAt: user.createdAt
+    };
   },
   async deleteUser(id: string) : Promise<boolean> {
     const deletedUser: any = await usersCollection.deleteOne({ _id: new ObjectId(id) });
