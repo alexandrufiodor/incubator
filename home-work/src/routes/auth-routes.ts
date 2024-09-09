@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { inputValidationMiddleware } from '../middlewares/middlewares';
 import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
+import { authServices } from '../domains/auth-services';
 
 export const authRoutes = Router();
 export const loginValidation = body('loginOrEmail')
@@ -13,6 +13,11 @@ export const loginValidation = body('loginOrEmail')
     return true
   })
 
-authRoutes.post( '/login', loginValidation, inputValidationMiddleware, async (req, res) => {
+authRoutes.post( '/login', async (req, res) => {
+  const user = await authServices.authUser(req.body?.loginOrEmail, req.body?.password)
+  if (!user || !req.body?.loginOrEmail || !req.body?.password) {
+    res.sendStatus(401)
+    return;
+  }
   res.sendStatus(204)
 })

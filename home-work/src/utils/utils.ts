@@ -28,5 +28,7 @@ export const getPaginationWithFilter = async (reqPage: string, reqLimit: string,
 
 
 export async function comparePassword(enteredPassword: string, storedPasswordHash: string): Promise<boolean> {
+  console.log('enteredPassword', enteredPassword); 
+  console.log('storedPasswordHash', storedPasswordHash);
   return await bcrypt.compare(enteredPassword, storedPasswordHash);
 }
