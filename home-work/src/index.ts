@@ -6,6 +6,7 @@ import { blogsServices } from './domains/blogs-services';
 import { postsServices } from './domains/posts-services';
 import { usersRoutes } from './routes/users-routes';
 import { usersServices } from './domains/users-services';
+import { authRoutes } from './routes/auth-routes';
 const app = express();
 
 const jsonBodyMiddleware = express.json();
@@ -14,6 +15,7 @@ app.use(jsonBodyMiddleware);
 app.use('/api/blogs', blogsRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/auth/login', authRoutes);
 app.delete('/api/testing/all-data', async (req, res) => {
   await postsServices.deleteAllPosts();
   await blogsServices.deleteAllBlogs();
