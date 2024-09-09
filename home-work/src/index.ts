@@ -15,7 +15,7 @@ app.use(jsonBodyMiddleware);
 app.use('/api/blogs', blogsRoutes);
 app.use('/api/posts', postsRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/auth/login', authRoutes);
+app.use('/api/auth', authRoutes);
 app.delete('/api/testing/all-data', async (req, res) => {
   await postsServices.deleteAllPosts();
   await blogsServices.deleteAllBlogs();

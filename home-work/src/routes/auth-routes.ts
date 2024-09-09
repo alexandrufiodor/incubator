@@ -4,7 +4,7 @@ import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
 
 export const authRoutes = Router();
-export const loginValidation = body('login')
+export const loginValidation = body('loginOrEmail')
   .custom(async (value) => {
     const user = await usersRepository.findUserByLoginOrEmail(value);
     if (!user) {
@@ -13,7 +13,7 @@ export const loginValidation = body('login')
     return true
   })
 
-authRoutes.post( '/', loginValidation, inputValidationMiddleware, async (req, res) => {
+authRoutes.post( '/login', loginValidation, inputValidationMiddleware, async (req, res) => {
 
   res.sendStatus(204)
 })
