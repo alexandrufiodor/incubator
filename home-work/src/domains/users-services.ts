@@ -1,6 +1,6 @@
 import { PostType } from '../repositories/posts-repository';
 import { usersRepository, UserType } from '../repositories/users-repository';
-import { verifyId } from '../utils/utils';
+import { encryptionPassword, verifyId } from '../utils/utils';
 
 export const usersServices = {
   async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, searchEmailTerm: string, searchLoginTerm: string): Promise<Array<PostType>> {
@@ -13,10 +13,11 @@ export const usersServices = {
   },
   async createUser(login: string, email: string, password: string): Promise<UserType> {
     const createdAt =  new Date().toISOString();
+    const newPassword = await encryptionPassword(password)
     const user = {
       login,
       email,
-      password,
+      password: newPassword,
       createdAt,
     }
     return await usersRepository.createUser(user);

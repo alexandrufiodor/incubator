@@ -1,4 +1,5 @@
 import { usersRepository } from './users-repository';
+import { comparePassword } from '../utils/utils';
 
 export const authRepository = {
   async findUserByLoginOrEmail(loginOrEmail: string, password: string): Promise<boolean> {
@@ -6,7 +7,7 @@ export const authRepository = {
     if (!user) {
       return false;
     }
-    return password==user.password;
+    return await comparePassword( password, user.password);
   },
 }
 
