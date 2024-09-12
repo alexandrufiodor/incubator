@@ -44,7 +44,7 @@ export const passwordValidation = body('password')
 usersRoutes.get( '/', authMiddleware, async (req, res) => {
   res.send(await usersServices.findAllUsers(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.query?.searchEmailTerm?.toString() || '', req?.query?.searchLoginTerm?.toString() || ''))
 })
-usersRoutes.post( '/', authMiddleware, loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) => {
+usersRoutes.post( '/', loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) => {
   res.status(201).send(await usersServices.createUser(req.body?.login, req.body?.email, req.body?.password));
 })
 usersRoutes.delete( '/:id', authMiddleware, async (req, res) => {
