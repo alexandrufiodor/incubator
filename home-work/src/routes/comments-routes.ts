@@ -1,7 +1,7 @@
 import { body } from 'express-validator';
 import { Router } from 'express';
 import { commentsService } from '../domains/comments-services';
-import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
+import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 
 export const commentsRouter = Router();
 
@@ -25,7 +25,7 @@ commentsRouter.get('/:id', async (req, res) => {
   res.send(findComment)
 })
 
-commentsRouter.put('/:id', authMiddleware, contentValidation, inputValidationMiddleware, async (req, res) => {
+commentsRouter.put('/:id', authWithBarearTokenMiddleware, contentValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
@@ -38,7 +38,7 @@ commentsRouter.put('/:id', authMiddleware, contentValidation, inputValidationMid
   }
   res.sendStatus(404);
 })
-commentsRouter.delete('/:id', authMiddleware, async (req, res) => {
+commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;

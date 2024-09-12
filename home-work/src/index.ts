@@ -20,10 +20,10 @@ app.use('/api/users', usersRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/comments', commentsRouter);
 app.delete('/api/testing/all-data', async (req, res) => {
-  // await postsServices.deleteAllPosts();
-  // await blogsServices.deleteAllBlogs();
-  // await usersServices.deleteAllUsers();
-  // await commentsService.deleteAllComments();
+  await postsServices.deleteAllPosts();
+  await blogsServices.deleteAllBlogs();
+  await usersServices.deleteAllUsers();
+  await commentsService.deleteAllComments();
   res.sendStatus(204);
 });
 
