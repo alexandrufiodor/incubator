@@ -25,6 +25,27 @@ export const postsServices = {
     }
     return null;
   },
+  async createCommentByPostId(content: string, postId: string, user: any): Promise<any> {
+    const findPost = await postsRepository.findPostById(postId)
+    if (findPost) {
+      const createdAt =  new Date().toISOString();
+      const comment = {
+        content,
+        createdAt,
+        commentatorInfo: {
+          userId: user?.userId,
+          userLogin: user?.login,
+        }
+      }
+      const createdComment = await postsRepository.createCommentByPostId(findPost?.id, comment)
+      return {
+        id: createdComment?.insertedId?.toString(),
+        ...comment
+      };
+    } else{
+      return undefined;
+    }
+  },
   async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
     const findBlog = await blogsRepository.findBlogById(blogId)
     if (findBlog) {

@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
+import { authMiddleware, authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsRepository } from '../repositories/blogs-repository';
 import { postsServices } from '../domains/posts-services';
+import { blogsServices } from '../domains/blogs-services';
+import { commentContentValidation } from './comments-routes';
 
 export const postsRoutes = Router();
 
@@ -76,6 +78,35 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
   const deletedPost = await postsServices.deletePost(req.params.id?.toString());
   if (deletedPost) {
     res.sendStatus(204)
+    return;
+  }
+  res.sendStatus(404);
+})
+
+
+postsRoutes.get('/:id/comments', async (req, res) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return;
+  }
+  const findBlog = await blogsServices.findBlogById(req.params.id);
+  if (!findBlog) {
+    res.sendStatus(404);
+    return;
+  }
+  res.send(await blogsServices.findAllPostsByBlogId(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.params?.id?.toString()))
+});
+postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res: any) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return;
+  }
+  if (req?.user) {
+    const newPost= await postsServices.createCommentByPostId(req.body?.content, req?.params?.id?.toString(), req?.user);
+    if (newPost) {
+      res.status(201).send(newPost);
+      return;
+    }
     return;
   }
   res.sendStatus(404);

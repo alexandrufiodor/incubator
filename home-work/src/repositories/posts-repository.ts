@@ -1,6 +1,6 @@
 import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
-import { getPaginationWithFilter, verifyId } from '../utils/utils';
+import { getPaginationWithFilter } from '../utils/utils';
 
 export type PostType = {
   id?: string,
@@ -24,6 +24,7 @@ export type PostDBType = {
 }
 
 export const postsCollection = clientDB.collection<PostType>('posts');
+export const postCommentsCollection = clientDB.collection<PostType>('posts');
 
 export const postsRepository = {
   async findAllPosts(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter = {}): Promise<any> {
@@ -56,6 +57,12 @@ export const postsRepository = {
         ...post
       })
       return { insertedId: newPost?.insertedId?.toString() };
+  },
+  async createCommentByPostId(postId: any, comment: any): Promise<{ insertedId: string }> {
+      const newComment = await clientDB.collection<PostType>(`posts-${postId}`).insertOne({
+        ...comment
+      })
+      return { insertedId: newComment?.insertedId?.toString() };
   },
   async updatePost(id: string, post: {
     title: string, shortDescription: string, content: string

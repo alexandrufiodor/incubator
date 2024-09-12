@@ -5,7 +5,7 @@ import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../mid
 
 export const commentsRouter = Router();
 
-const contentValidation = body('content')
+export const commentContentValidation = body('content')
   .notEmpty()
   .withMessage('Content field is required.')
   .isString()
@@ -25,7 +25,7 @@ commentsRouter.get('/:id', async (req, res) => {
   res.send(findComment)
 })
 
-commentsRouter.put('/:id', authWithBarearTokenMiddleware, contentValidation, inputValidationMiddleware, async (req, res) => {
+commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
