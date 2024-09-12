@@ -91,6 +91,9 @@ postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentV
     if (newPost) {
       res.status(201).send(newPost);
       return;
+    } else {
+      res.sendStatus(404);
+      return;
     }
     return;
   }

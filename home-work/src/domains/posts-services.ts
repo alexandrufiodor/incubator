@@ -29,8 +29,9 @@ export const postsServices = {
     return await postsRepository.findAllCommentsByPostId(pageSize, pageNumber, sortBy, sortDirection, { postId });
   },
   async createCommentByPostId(content: string, postId: string, user: any): Promise<any> {
+    console.log('postId', postId);
     const findPost = await postsRepository.findPostById(postId)
-
+    console.log('findPost', findPost);
     if (findPost) {
       const createdAt =  new Date().toISOString();
       const comment = {
@@ -54,7 +55,7 @@ export const postsServices = {
         },
       };
     } else{
-      return undefined;
+      return null;
     }
   },
   async createPost(title: string, shortDescription: string, content: string, blogId: string): Promise<PostType | undefined> {
