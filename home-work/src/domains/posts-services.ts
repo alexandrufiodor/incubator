@@ -1,7 +1,6 @@
 import { verifyId } from '../utils/utils';
-import { blogsRepository, BlogType } from '../repositories/blogs-repository';
+import { blogsRepository } from '../repositories/blogs-repository';
 import { postsRepository, PostType } from '../repositories/posts-repository';
-import { ObjectId } from 'mongodb';
 
 
 export const postsServices = {
@@ -45,7 +44,6 @@ export const postsServices = {
         postId: findPost?._id?.toString()
       }
       const createdComment = await postsRepository.createCommentByPostId(comment)
-      console.log('createdComment', createdComment);
       return {
         id: createdComment?.insertedId?.toString(),
         content,

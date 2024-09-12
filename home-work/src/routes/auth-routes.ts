@@ -12,7 +12,7 @@ authRoutes.post( '/login', async (req, res) => {
     return;
   }
   const token = await jwtService.createJWT(user)
-  res.status(201).send({
+  res.status(200).send({
     accessToken: token
   });
 })

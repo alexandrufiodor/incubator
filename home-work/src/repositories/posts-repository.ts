@@ -61,7 +61,6 @@ export const postsRepository = {
   },
   async findAllCommentsByPostId(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter = {}): Promise<any> {
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, commentsCollection, filter);
-    console.log('filter', filter);
     //@ts-ignore
     const comments: any = (await commentsCollection.find(filter).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((comment: any) => {
       return {

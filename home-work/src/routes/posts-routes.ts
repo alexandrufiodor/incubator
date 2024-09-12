@@ -3,7 +3,6 @@ import { body } from 'express-validator';
 import { authMiddleware, authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsRepository } from '../repositories/blogs-repository';
 import { postsServices } from '../domains/posts-services';
-import { blogsServices } from '../domains/blogs-services';
 import { commentContentValidation } from './comments-routes';
 
 export const postsRoutes = Router();
@@ -83,7 +82,6 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
   res.sendStatus(404);
 })
 postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res: any) => {
-  console.log('tgg');
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
