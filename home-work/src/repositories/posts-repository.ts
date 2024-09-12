@@ -1,6 +1,7 @@
 import { clientDB } from './db';
 import { ObjectId } from 'mongodb';
 import { getPaginationWithFilter } from '../utils/utils';
+import { commentsCollection } from './comments-repository';
 
 export type PostType = {
   id?: string,
@@ -58,10 +59,31 @@ export const postsRepository = {
       })
       return { insertedId: newPost?.insertedId?.toString() };
   },
-  async createCommentByPostId(postId: any, comment: any): Promise<{ insertedId: string }> {
-      const newComment = await clientDB.collection<PostType>(`posts-${postId}`).insertOne({
+  async findAllCommentsByPostId(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter = {}): Promise<any> {
+    const pagination = await getPaginationWithFilter(pageNumber, pageSize, commentsCollection, filter);
+    console.log('filter', filter);
+    //@ts-ignore
+    const comments: any = (await commentsCollection.find(filter).sort({[`${sortBy}`]: sortDirection == 'desc' ? -1 : 1}).limit(pagination.limit).skip(pagination.offset).toArray())?.map((comment: any) => {
+      return {
+        id: comment._id,
+        content: comment.content,
+        createdAt: comment.createdAt,
+        commentatorInfo: comment?.commentatorInfo,
+      }
+    });
+    return {
+      pagesCount: pagination.totalPages,
+      page: pagination.page,
+      pageSize: pagination.limit,
+      totalCount: pagination.totalItems,
+      items: comments
+    }
+  },
+  async createCommentByPostId(comment: any): Promise<{ insertedId: string }> {
+      const newComment = await commentsCollection.insertOne({
         ...comment
       })
+    console.log('newComment', newComment);
       return { insertedId: newComment?.insertedId?.toString() };
   },
   async updatePost(id: string, post: {

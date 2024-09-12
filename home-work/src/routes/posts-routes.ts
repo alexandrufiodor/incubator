@@ -82,21 +82,8 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
   }
   res.sendStatus(404);
 })
-
-
-postsRoutes.get('/:id/comments', async (req, res) => {
-  if (!req?.params?.id) {
-    res.sendStatus(404);
-    return;
-  }
-  const findBlog = await blogsServices.findBlogById(req.params.id);
-  if (!findBlog) {
-    res.sendStatus(404);
-    return;
-  }
-  res.send(await blogsServices.findAllPostsByBlogId(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.params?.id?.toString()))
-});
 postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res: any) => {
+  console.log('tgg');
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -111,3 +98,16 @@ postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentV
   }
   res.sendStatus(404);
 })
+
+postsRoutes.get('/:id/comments', async (req, res) => {
+  if (!req?.params?.id) {
+    res.sendStatus(404);
+    return;
+  }
+  const findPost = await postsServices.findPostById(req.params.id);
+  if (!findPost) {
+    res.sendStatus(404);
+    return;
+  }
+  res.send(await postsServices.findAllCommentsByPostId(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.params?.id?.toString()))
+});

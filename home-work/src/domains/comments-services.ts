@@ -1,6 +1,5 @@
 import { commentsRepository, CommentType } from '../repositories/comments-repository';
 import { verifyId } from '../utils/utils';
-import { blogsRepository } from '../repositories/blogs-repository';
 
 export const commentsService = {
   async findCommentById(id: string): Promise<CommentType | null> {
@@ -14,7 +13,11 @@ export const commentsService = {
       const existingComment = await commentsRepository.findCommentById(id);
       if (existingComment) {
         const updatedComment: CommentType = {
-          ...existingComment,
+          createdAt: existingComment?.createdAt,
+          commentatorInfo: {
+            userId: existingComment?.commentatorInfo?.userId,
+            userLogin: existingComment?.commentatorInfo?.userLogin,
+          },
           content
         };
         return await commentsRepository.updateComment(id, updatedComment);

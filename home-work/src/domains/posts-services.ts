@@ -1,6 +1,7 @@
 import { verifyId } from '../utils/utils';
-import { blogsRepository } from '../repositories/blogs-repository';
+import { blogsRepository, BlogType } from '../repositories/blogs-repository';
 import { postsRepository, PostType } from '../repositories/posts-repository';
+import { ObjectId } from 'mongodb';
 
 
 export const postsServices = {
@@ -25,8 +26,12 @@ export const postsServices = {
     }
     return null;
   },
+  async findAllCommentsByPostId(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, postId: string): Promise<Array<any>> {
+    return await postsRepository.findAllCommentsByPostId(pageSize, pageNumber, sortBy, sortDirection, { postId });
+  },
   async createCommentByPostId(content: string, postId: string, user: any): Promise<any> {
     const findPost = await postsRepository.findPostById(postId)
+
     if (findPost) {
       const createdAt =  new Date().toISOString();
       const comment = {
@@ -35,12 +40,20 @@ export const postsServices = {
         commentatorInfo: {
           userId: user?.userId,
           userLogin: user?.login,
-        }
+        },
+        //@ts-ignore
+        postId: findPost?._id?.toString()
       }
-      const createdComment = await postsRepository.createCommentByPostId(findPost?.id, comment)
+      const createdComment = await postsRepository.createCommentByPostId(comment)
+      console.log('createdComment', createdComment);
       return {
         id: createdComment?.insertedId?.toString(),
-        ...comment
+        content,
+        createdAt,
+        commentatorInfo: {
+          userId: user?.userId,
+          userLogin: user?.login,
+        },
       };
     } else{
       return undefined;
