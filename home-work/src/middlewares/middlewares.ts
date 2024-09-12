@@ -44,12 +44,7 @@ export const authWithBarearTokenMiddleware = async (req: Request, res: Response,
 
 }
 
-export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req?.headers?.authorization) {
-    res.sendStatus(401)
-    next();
-    return;
-  }
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const auth = { login: 'admin', password: 'qwerty' }
   const b64auth = (req.headers.authorization || '').split('Basic ')[1] || ''
   const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':')
@@ -57,4 +52,5 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     return next()
   }
   res.set('WWW-Authenticate', 'Basic realm="401"')
+  res.sendStatus(401);
 }
