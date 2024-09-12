@@ -7,7 +7,10 @@ export const authRepository = {
     if (!user) {
       return false;
     }
-    return await comparePassword( password, user.password);
+    if (await comparePassword( password, user.password)) {
+      return user;
+    }
+    return false
   },
 }
 

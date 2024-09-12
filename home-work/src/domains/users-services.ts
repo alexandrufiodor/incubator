@@ -3,13 +3,16 @@ import { usersRepository, UserType } from '../repositories/users-repository';
 import { encryptionPassword, verifyId } from '../utils/utils';
 
 export const usersServices = {
-  async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, searchEmailTerm: string, searchLoginTerm: string): Promise<Array<PostType>> {
+  async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, searchEmailTerm: string, searchLoginTerm: string): Promise<Array<UserType>> {
     return await usersRepository.findAllUsers(pageSize, pageNumber, sortBy, sortDirection, {
       $or: [
         { login: { $regex: new RegExp(searchLoginTerm, 'i') } },
         { email: { $regex: new RegExp(searchEmailTerm, 'i') } }
     ]
     });
+  },
+  async findUserById(userId: string): Promise<Array<UserType>> {
+    return await usersRepository.findUserById(userId);
   },
   async createUser(login: string, email: string, password: string): Promise<UserType> {
     const createdAt =  new Date().toISOString();

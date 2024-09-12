@@ -52,6 +52,19 @@ export const usersRepository = {
     }
     return null
   },
+  async findUserById(id: string): Promise<any> {
+    const user: any = await usersCollection.findOne({ _id: new ObjectId(id) });
+    if (user){
+      return {
+        // @ts-ignore
+        id: user?._id,
+        login: user?.login,
+        email: user?.email,
+        password: user.password
+      };
+    }
+    return null
+  },
   async createUser(user: UserType): Promise<UserType> {
     const newUser = await usersCollection.insertOne({
       ...user
