@@ -90,6 +90,8 @@ export const postsRepository = {
   }): Promise<Array<PostType> | undefined | null> {
       const updatedPost: any = await postsCollection.updateOne({ _id: new ObjectId(id) }, { "$set": { ...post } })
       return updatedPost;
+
+    // console.log();
   },
   async deletePost(id: string) : Promise<boolean> {
       const deletedPost: any = await postsCollection.deleteOne({ _id: new ObjectId(id) });
