@@ -25,29 +25,38 @@ commentsRouter.get('/:id', async (req, res) => {
   res.send(findComment)
 })
 
-commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req, res) => {
+commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
   }
-
-  const updatedComment = await commentsService.updateCommentById(req.params.id?.toString(), req.body?.content);
-  if (updatedComment) {
-    res.sendStatus(204);
-    return;
+  if (req?.user) {
+    const updatedComment = await commentsService.updateCommentById(req.params.id?.toString(), req.body?.content);
+    if (updatedComment) {
+      res.sendStatus(204);
+      return;
+    }
+  } else {
+    res.sendStatus(401)
+    return
   }
   res.sendStatus(404);
   return;
 })
-commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req, res) => {
+commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req: any, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
   }
-  const deletedComment = await commentsService.deleteComment(req.params.id?.toString());
-  if (deletedComment) {
-    res.sendStatus(204)
-    return;
+  if (req?.user) {
+    const deletedComment = await commentsService.deleteComment(req.params.id?.toString());
+    if (deletedComment) {
+      res.sendStatus(204)
+      return;
+    }
+  } else {
+    res.sendStatus(401)
+    return
   }
   res.sendStatus(404);
   return;

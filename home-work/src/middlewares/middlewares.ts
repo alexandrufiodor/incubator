@@ -40,8 +40,8 @@ export const authWithBarearTokenMiddleware = async (req: Request, res: Response,
     }
   }
   res.sendStatus(401)
+  // next();
   return
-
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
