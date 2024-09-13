@@ -32,6 +32,10 @@ commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidati
   }
   if (req?.user) {
     const comment = await commentsService.findCommentById(req.params.id);
+    if (!comment) {
+      res.sendStatus(404);
+      return;
+    }
     if (comment?.commentatorInfo?.userId === req?.user?.userId) {
       const updatedComment = await commentsService.updateCommentById(req.params.id?.toString(), req.body?.content);
       if (updatedComment) {
@@ -53,6 +57,10 @@ commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req: any, re
   }
   if (req?.user) {
     const comment = await commentsService.findCommentById(req.params.id);
+    if (!comment) {
+      res.sendStatus(404);
+      return;
+    }
     if (comment?.commentatorInfo?.userId === req?.user?.userId) {
       const deletedComment = await commentsService.deleteComment(req.params.id?.toString());
       if (deletedComment) {
