@@ -31,14 +31,17 @@ commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidati
     return
   }
   if (req?.user) {
-    const updatedComment = await commentsService.updateCommentById(req.params.id?.toString(), req.body?.content);
-    if (updatedComment) {
-      res.sendStatus(204);
-      return;
+    const comment = await commentsService.findCommentById(req.params.id);
+    if (comment?.commentatorInfo?.userId === req?.user?.userId) {
+      const updatedComment = await commentsService.updateCommentById(req.params.id?.toString(), req.body?.content);
+      if (updatedComment) {
+        res.sendStatus(204);
+        return;
+      }
+    } else {
+      res.sendStatus(403)
+      return
     }
-  } else {
-    res.sendStatus(401)
-    return
   }
   res.sendStatus(404);
   return;
@@ -49,14 +52,17 @@ commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req: any, re
     return;
   }
   if (req?.user) {
-    const deletedComment = await commentsService.deleteComment(req.params.id?.toString());
-    if (deletedComment) {
-      res.sendStatus(204)
-      return;
+    const comment = await commentsService.findCommentById(req.params.id);
+    if (comment?.commentatorInfo?.userId === req?.user?.userId) {
+      const deletedComment = await commentsService.deleteComment(req.params.id?.toString());
+      if (deletedComment) {
+        res.sendStatus(204)
+        return;
+      }
+    } else {
+      res.sendStatus(403)
+      return
     }
-  } else {
-    res.sendStatus(401)
-    return
   }
   res.sendStatus(404);
   return;
