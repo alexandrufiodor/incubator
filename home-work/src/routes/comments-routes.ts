@@ -37,6 +37,7 @@ commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidati
     return;
   }
   res.sendStatus(404);
+  return;
 })
 commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req, res) => {
   if (!req?.params?.id) {
@@ -49,4 +50,5 @@ commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req, res) =>
     return;
   }
   res.sendStatus(404);
+  return;
 })
