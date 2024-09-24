@@ -20,7 +20,6 @@ export const inputValidationMiddleware = (req: Request, res: Response, next: Nex
 export const authWithBarearTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (!req?.headers?.authorization) {
     res.sendStatus(401)
-    next();
     return;
   }
   //@ts-ignore
@@ -40,7 +39,6 @@ export const authWithBarearTokenMiddleware = async (req: Request, res: Response,
     }
   }
   res.sendStatus(401)
-  // next();
   return
 }
 
