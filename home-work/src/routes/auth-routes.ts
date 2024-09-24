@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { authServices } from '../domains/auth-services';
 import { jwtService } from '../application/jwt-service';
-import { authMiddleware } from '../middlewares/middlewares';
+import { authWithBarearTokenMiddleware } from '../middlewares/middlewares';
 
 export const authRoutes = Router();
 
@@ -17,7 +17,7 @@ authRoutes.post( '/login', async (req, res) => {
   });
 })
 
-authRoutes.get( '/me', authMiddleware, async (req: any, res: any) => {
+authRoutes.get( '/me', authWithBarearTokenMiddleware, async (req: any, res: any) => {
   if (req?.user) {
     res.status(200).send(req?.user);
     return;

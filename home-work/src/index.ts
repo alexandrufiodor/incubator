@@ -1,3 +1,4 @@
+//@ts-ignore
 import express from 'express'
 import { blogsRoutes } from './routes/blogs-routes';
 import { postsRoutes } from './routes/posts-routes';
