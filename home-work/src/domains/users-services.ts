@@ -37,6 +37,16 @@ export const usersServices = {
     }
     return await usersRepository.createUser(user);
   },
+  async updateUser(code: string): Promise<any> {
+    if (code) {
+      const findUser = await usersRepository.findUserByConfirmationCode(code);
+      if (findUser) {
+        const updatedUser: any =  await usersRepository.updateUser(findUser?.id, { ...findUser, emailConfirmation: { isConfirmed: true } });
+        return updatedUser;
+      }
+    }
+    return null;
+  },
   async deleteUser(id: string): Promise<boolean> {
     if (verifyId(id)) {
       return await usersRepository.deleteUser(id);

@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import {v4 as uuidv4} from 'uuid';
 import { add } from 'date-fns';
 import { emailManagers } from '../managers/email-managers';
+import { usersServices } from './users-services';
 
 const htmlTemplate = (code: string) => {
   return `<h1>Thank for your registration</h1>
@@ -28,7 +29,7 @@ export const authServices = {
         createdAt,
       },
      emailConfirmation: {
-        confirmationCode: uuidv4(),
+       confirmationCode: uuidv4(),
        expirationDate: add(new Date(), {
          minutes: 3
        }),
@@ -39,4 +40,8 @@ export const authServices = {
     await emailManagers.sendEmailConfirmationMessage({ email, subject: 'Test', message: htmlTemplate(user?.emailConfirmation?.confirmationCode) })
     return createResult
   },
+  async registrationCode(code: string): Promise<boolean> {
+    const user = await usersServices.updateUser(code)
+    return !!user
+  }
 }

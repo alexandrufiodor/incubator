@@ -3,6 +3,30 @@ import { authServices } from '../domains/auth-services';
 import { jwtService } from '../application/jwt-service';
 import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { emailValidation, loginValidation, passwordValidation } from './users';
+import { body } from 'express-validator';
+import { usersRepository } from '../repositories/users-repository';
+
+export const codeValidation = body('code')
+  .notEmpty()
+  .withMessage('Code field is required.')
+  .custom(async (value) => {
+    const user = await usersRepository.findUserByConfirmationCode(value);
+    if (!user) {
+      return Promise.reject('Invalid code');
+    }
+    return true
+  })
+
+export const emailRegistrationValidation = body('email')
+  .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  .withMessage('Invalid email format').custom(async (value) => {
+    const user = await usersRepository.findUserByLoginOrEmail(value);
+    if (user) {
+      return Promise.reject('Email must be unique');
+    }
+    return true
+  })
+
 
 export const auth = Router();
 
@@ -31,4 +55,24 @@ auth.post( '/registration', loginValidation, emailValidation, passwordValidation
   await authServices.createUser(req.body?.login, req.body?.email, req.body?.password)
   res.sendStatus(204);
   return;
+})
+
+auth.post( '/registration-confirmation', codeValidation, inputValidationMiddleware, async (req, res) => {
+  const registrationCode  = await authServices.registrationCode(req.body?.code)
+  if (registrationCode) {
+    res.sendStatus(204);
+    return;
+  } else {
+    res.sendStatus(400)
+  }
+})
+
+auth.post( '/registration-email-resending', codeValidation, inputValidationMiddleware, async (req, res) => {
+  const registrationCode  = await authServices.registrationCode(req.body?.code)
+  if (registrationCode) {
+    res.sendStatus(204);
+    return;
+  } else {
+    res.sendStatus(400)
+  }
 })
