@@ -22,7 +22,9 @@ export const emailRegistrationValidation = body('email')
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   .withMessage('Invalid email format').custom(async (value) => {
     const user = await usersRepository.findUserByLoginOrEmail(value, true);
-    console.log('🚀auth.ts:24', JSON.stringify(user, null, 2));
+    if (!user) {
+      return Promise.reject('User email doesnt exist');
+    }
     if (user?.emailConfirmation?.isConfirmed) {
       return Promise.reject('Email is confirmed!');
     }
