@@ -3,9 +3,9 @@ import { body } from 'express-validator';
 import { authMiddleware, authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsRepository } from '../repositories/blogs-repository';
 import { postsServices } from '../domains/posts-services';
-import { commentContentValidation } from './comments-routes';
+import { commentContentValidation } from './comments';
 
-export const postsRoutes = Router();
+export const posts = Router();
 
 export const titleValidation = body('title')
   .notEmpty()
@@ -39,10 +39,10 @@ export const blogIdValidation = body('blogId')
   })
 
 
-postsRoutes.get('/', async (req, res) => {
+posts.get('/', async (req, res) => {
   res.send(await postsServices.findAllPosts(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc'))
 });
-postsRoutes.get('/:id', async (req, res) => {
+posts.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -54,10 +54,10 @@ postsRoutes.get('/:id', async (req, res) => {
   }
   res.send(findPost)
 })
-postsRoutes.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
+posts.post('/', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   res.status(201).send(await postsServices.createPost(req.body?.title, req.body?.shortDescription, req.body?.content, req.body?.blogId));
 })
-postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
+posts.put('/:id', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, blogIdValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -69,7 +69,7 @@ postsRoutes.put('/:id', authMiddleware, titleValidation, shortDescriptionValidat
   }
   res.sendStatus(404);
 })
-postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
+posts.delete('/:id', authMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
@@ -81,7 +81,7 @@ postsRoutes.delete('/:id', authMiddleware, async (req, res) => {
   }
   res.sendStatus(404);
 })
-postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res: any) => {
+posts.post('/:id/comments', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res: any) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -95,12 +95,11 @@ postsRoutes.post('/:id/comments', authWithBarearTokenMiddleware, commentContentV
       res.sendStatus(404);
       return;
     }
-    return;
   }
   res.sendStatus(404);
 })
 
-postsRoutes.get('/:id/comments', async (req, res) => {
+posts.get('/:id/comments', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;

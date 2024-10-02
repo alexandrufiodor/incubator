@@ -5,7 +5,7 @@ import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
 
 
-export const usersRoutes = Router();
+export const users = Router();
 
 export const loginValidation = body('login')
   .notEmpty()
@@ -41,13 +41,13 @@ export const passwordValidation = body('password')
   .isLength({min: 6, max: 20 })
   .withMessage('Password length should be from 6 to 20 symbols');
 
-usersRoutes.get( '/', authMiddleware, async (req, res) => {
+users.get( '/', authMiddleware, async (req, res) => {
   res.send(await usersServices.findAllUsers(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.query?.searchEmailTerm?.toString() || '', req?.query?.searchLoginTerm?.toString() || ''))
 })
-usersRoutes.post( '/', authMiddleware, loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) => {
+users.post( '/', authMiddleware, loginValidation, emailValidation, passwordValidation, inputValidationMiddleware, async (req, res) => {
   res.status(201).send(await usersServices.createUser(req.body?.login, req.body?.email, req.body?.password));
 })
-usersRoutes.delete( '/:id', authMiddleware, async (req, res) => {
+users.delete( '/:id', authMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;

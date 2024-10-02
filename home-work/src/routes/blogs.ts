@@ -2,9 +2,9 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { authMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { blogsServices } from '../domains/blogs-services';
-import { contentValidation, shortDescriptionValidation, titleValidation } from './posts-routes';
+import { contentValidation, shortDescriptionValidation, titleValidation } from './posts';
 
-export const blogsRoutes = Router();
+export const blogs = Router();
 
 const nameValidation = body('name')
   .notEmpty()
@@ -29,10 +29,10 @@ const websiteUrlValidation = body('websiteUrl')
     .matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
     .withMessage('Invalid URL format')
 
-blogsRoutes.get('/', async (req, res) => {
+blogs.get('/', async (req, res) => {
   res.send(await blogsServices.findAllBlogs(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.searchNameTerm?.toString() || null, req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc'))
 });
-blogsRoutes.get('/:id', async (req, res) => {
+blogs.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
   }
@@ -43,7 +43,7 @@ blogsRoutes.get('/:id', async (req, res) => {
   }
   res.send(findBlog)
 })
-blogsRoutes.get('/:id/posts', async (req, res) => {
+blogs.get('/:id/posts', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -55,7 +55,7 @@ blogsRoutes.get('/:id/posts', async (req, res) => {
   }
   res.send(await blogsServices.findAllPostsByBlogId(req?.query?.pageSize?.toString() || '10', req?.query?.pageNumber?.toString() || '1', req?.query?.sortBy?.toString() || 'createdAt', req?.query?.sortDirection?.toString() || 'desc', req?.params?.id?.toString()))
 });
-blogsRoutes.post('/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, inputValidationMiddleware, async (req, res) => {
+blogs.post('/:id/posts', authMiddleware, titleValidation, shortDescriptionValidation, contentValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;
@@ -67,10 +67,10 @@ blogsRoutes.post('/:id/posts', authMiddleware, titleValidation, shortDescription
   }
   res.sendStatus(404);
 })
-blogsRoutes.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
+blogs.post('/', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware,async (req, res) => {
   res.status(201).send(await blogsServices.createBlog(req.body?.name, req.body?.description, req.body?.websiteUrl));
 })
-blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, async (req, res) => {
+blogs.put('/:id', authMiddleware, nameValidation, descriptionValidation, websiteUrlValidation, inputValidationMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
@@ -83,7 +83,7 @@ blogsRoutes.put('/:id', authMiddleware, nameValidation, descriptionValidation, w
   }
   res.sendStatus(404);
 })
-blogsRoutes.delete('/:id', authMiddleware, async (req, res) => {
+blogs.delete('/:id', authMiddleware, async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;

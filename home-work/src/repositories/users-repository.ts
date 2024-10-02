@@ -1,6 +1,7 @@
 import { clientDB } from './db';
 import { getPaginationWithFilter } from '../utils/utils';
 import { ObjectId } from 'mongodb';
+import { User } from './auth-repository';
 
 export type UserType = {
   id?: string,
@@ -16,7 +17,7 @@ export type UserDBType = {
   createdAt?: string,
 }
 
-export const usersCollection = clientDB.collection<UserType>('users');
+export const usersCollection = clientDB.collection<UserType | User>('users');
 
 export const usersRepository = {
   async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter ={}): Promise<any> {

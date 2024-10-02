@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { commentsService } from '../domains/comments-services';
 import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 
-export const commentsRouter = Router();
+export const comments = Router();
 
 export const commentContentValidation = body('content')
   .notEmpty()
@@ -13,7 +13,7 @@ export const commentContentValidation = body('content')
   .withMessage('Content length should be from 20 to 300 symbols');
 
 
-commentsRouter.get('/:id', async (req, res) => {
+comments.get('/:id', async (req, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
   }
@@ -25,7 +25,7 @@ commentsRouter.get('/:id', async (req, res) => {
   res.send(findComment)
 })
 
-commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res) => {
+comments.put('/:id', authWithBarearTokenMiddleware, commentContentValidation, inputValidationMiddleware, async (req: any, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return
@@ -50,7 +50,7 @@ commentsRouter.put('/:id', authWithBarearTokenMiddleware, commentContentValidati
   res.sendStatus(404);
   return;
 })
-commentsRouter.delete('/:id', authWithBarearTokenMiddleware, async (req: any, res) => {
+comments.delete('/:id', authWithBarearTokenMiddleware, async (req: any, res) => {
   if (!req?.params?.id) {
     res.sendStatus(404);
     return;

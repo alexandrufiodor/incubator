@@ -1,3 +1,4 @@
+//@ts-ignore
 import bcrypt from 'bcrypt'
 
 export const verifyId = (id: string): boolean => {

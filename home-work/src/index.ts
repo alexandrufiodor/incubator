@@ -1,25 +1,27 @@
 //@ts-ignore
 import express from 'express'
-import { blogsRoutes } from './routes/blogs-routes';
-import { postsRoutes } from './routes/posts-routes';
+import { blogs } from './routes/blogs';
+import { posts } from './routes/posts';
 import { runDB } from './repositories/db';
 import { blogsServices } from './domains/blogs-services';
 import { postsServices } from './domains/posts-services';
-import { usersRoutes } from './routes/users-routes';
+import { users } from './routes/users';
 import { usersServices } from './domains/users-services';
-import { authRoutes } from './routes/auth-routes';
-import { commentsRouter } from './routes/comments-routes';
+import { auth } from './routes/auth';
+import { comments } from './routes/comments';
 import { commentsService } from './domains/comments-services';
+import { email } from './routes/email';
 const app = express();
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
 
-app.use('/api/blogs', blogsRoutes);
-app.use('/api/posts', postsRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/comments', commentsRouter);
+app.use('/api/email', email);
+app.use('/api/blogs', blogs);
+app.use('/api/posts', posts);
+app.use('/api/users', users);
+app.use('/api/auth', auth);
+app.use('/api/comments', comments);
 app.delete('/api/testing/all-data', async (req, res) => {
   await postsServices.deleteAllPosts();
   await blogsServices.deleteAllBlogs();
