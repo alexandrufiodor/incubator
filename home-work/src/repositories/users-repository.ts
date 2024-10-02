@@ -96,6 +96,7 @@ export const usersRepository = {
     };
   },
   async updateUser(id: string, user: any): Promise<Array<PostType> | undefined | null> {
+    console.log('🚀users-repository.ts:99', JSON.stringify(user, null, 2));
     const updatedUser: any = await usersCollection.updateOne({ _id: new ObjectId(id) }, { "$set": { ...user } })
     return updatedUser;
   },

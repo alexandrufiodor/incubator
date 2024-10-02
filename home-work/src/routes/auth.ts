@@ -9,6 +9,7 @@ import { usersRepository } from '../repositories/users-repository';
 export const codeValidation = body('code')
   .notEmpty()
   .withMessage('Code field is required.')
+  .isString().withMessage('Invalid code')
   .custom(async (value) => {
     const user = await usersRepository.findUserByConfirmationCode(value);
     if (!user) {

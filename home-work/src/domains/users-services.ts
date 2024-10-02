@@ -50,18 +50,20 @@ export const usersServices = {
   async updateUserByEmail(email: string): Promise<any> {
     if (email) {
       const findUser = await usersRepository.findUserByLoginOrEmail(email, true);
+      const confirmationCode = uuidv4();
       if (findUser) {
-        const updatedUser: any =  await usersRepository.updateUser(findUser?.id, {
+        console.log('🚀users-services.ts:55', JSON.stringify(confirmationCode, null, 2));
+        await usersRepository.updateUser(findUser?._id, {
           ...findUser,
           emailConfirmation: {
-            ...findUser?.emailConfirmation,
-            confirmationCode: uuidv4(),
+            isConfirmed: false,
+            confirmationCode,
             expirationDate: add(new Date(), {
               minutes: 3
             }),
           }
         });
-        return updatedUser;
+        return confirmationCode;
       }
     }
     return null;
