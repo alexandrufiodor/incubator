@@ -22,7 +22,7 @@ export const authServices = {
     const user = {
       _id: new ObjectId(),
       accountData: {
-        userName: login,
+        login,
         email,
         passwordHash: newPassword,
         createdAt,

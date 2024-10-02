@@ -1,8 +1,8 @@
-import { usersCollection, usersRepository } from './users-repository';
+import { usersRepository } from './users-repository';
 import { comparePassword } from '../utils/utils';
 import { ObjectId } from 'mongodb';
 interface AccountData {
-  userName: string;
+  login: string;
   email: string;
   passwordHash: string;
   createdAt: string;
@@ -32,9 +32,7 @@ export const authRepository = {
     return false
   },
   async createUser(user: User): Promise<User | null> {
-    const newUser = await usersCollection.insertOne({
-      ...user
-    })
+    const newUser = await usersRepository.createUser(user);
     if (!newUser) {
       return null
     }
