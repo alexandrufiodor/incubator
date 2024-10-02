@@ -52,7 +52,6 @@ export const usersServices = {
       const findUser = await usersRepository.findUserByLoginOrEmail(email, true);
       const confirmationCode = uuidv4();
       if (findUser) {
-        console.log('🚀users-services.ts:55', JSON.stringify(confirmationCode, null, 2));
         await usersRepository.updateUser(findUser?._id, {
           ...findUser,
           emailConfirmation: {

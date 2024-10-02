@@ -53,7 +53,7 @@ export const usersRepository = {
         id: user?._id,
         login: user?.accountData.login,
         email: user?.accountData.email,
-        password: user.accountData.password
+        password: user.accountData.passwordHash
       };
     }
     return null
