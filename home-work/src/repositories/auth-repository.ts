@@ -38,13 +38,6 @@ export const authRepository = {
     }
     return user
   },
-  async findUserByConfirmationCode(code: string): Promise<any> {
-    const user = await usersRepository.findUserByConfirmationCode(code);
-    if (!user) {
-      return null
-    }
-    return user
-  }
 }
 
 

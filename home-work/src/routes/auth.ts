@@ -20,9 +20,10 @@ export const codeValidation = body('code')
 export const emailRegistrationValidation = body('email')
   .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
   .withMessage('Invalid email format').custom(async (value) => {
-    const user = await usersRepository.findUserByLoginOrEmail(value);
-    if (user) {
-      return Promise.reject('Email must be unique');
+    const user = await usersRepository.findUserByLoginOrEmail(value, true);
+    console.log('🚀auth.ts:24', JSON.stringify(user, null, 2));
+    if (user?.emailConfirmation?.isConfirmed) {
+      return Promise.reject('Email is confirmed!');
     }
     return true
   })
@@ -67,12 +68,8 @@ auth.post( '/registration-confirmation', codeValidation, inputValidationMiddlewa
   }
 })
 
-auth.post( '/registration-email-resending', codeValidation, inputValidationMiddleware, async (req, res) => {
-  const registrationCode  = await authServices.registrationCode(req.body?.code)
-  if (registrationCode) {
-    res.sendStatus(204);
-    return;
-  } else {
-    res.sendStatus(400)
-  }
+auth.post( '/registration-email-resending', emailRegistrationValidation, inputValidationMiddleware, async (req, res) => {
+  await authServices.registrationEmailResending(req.body?.email)
+  res.sendStatus(204);
+  return;
 })

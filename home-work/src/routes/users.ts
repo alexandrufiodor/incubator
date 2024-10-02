@@ -16,9 +16,7 @@ export const loginValidation = body('login')
   .withMessage('Login length should be from 3 to 10 symbols')
   .matches(/^[a-zA-Z0-9_-]*$/)
   .withMessage('Invalid login format').custom(async (value) => {
-    console.log('🚀users.ts:19', JSON.stringify(value, null, 2));
     const user = await usersRepository.findUserByLoginOrEmail(value);
-    console.log('🚀users.ts:20', JSON.stringify(user, null, 2));
     if (user) {
       return Promise.reject('Login must be unique');
     }

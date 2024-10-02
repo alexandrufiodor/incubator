@@ -41,7 +41,12 @@ export const authServices = {
     return createResult
   },
   async registrationCode(code: string): Promise<boolean> {
-    const user = await usersServices.updateUser(code)
+    const user = await usersServices.updateUserByCode(code)
+    return !!user
+  },
+  async registrationEmailResending(email: string): Promise<boolean> {
+    const user = await usersServices.updateUserByEmail(email)
+    await emailManagers.sendEmailConfirmationMessage({ email, subject: 'Test', message: htmlTemplate(user?.emailConfirmation?.confirmationCode) })
     return !!user
   }
 }

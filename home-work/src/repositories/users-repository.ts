@@ -2,7 +2,7 @@ import { clientDB } from './db';
 import { getPaginationWithFilter } from '../utils/utils';
 import { ObjectId } from 'mongodb';
 import { User } from './auth-repository';
-import { postsCollection, PostType } from './posts-repository';
+import { PostType } from './posts-repository';
 
 export type UserType = {
   id?: string,
@@ -41,10 +41,13 @@ export const usersRepository = {
       items: users
     }
   },
-  async findUserByLoginOrEmail(loginOrEmail: string): Promise<any> {
+  async findUserByLoginOrEmail(loginOrEmail: string, hasConfirmed?: boolean): Promise<any> {
     const query = { $or: [ { 'accountData.login': loginOrEmail }, { 'accountData.email': loginOrEmail } ] };
     const user: any = await usersCollection.findOne(query);
     if (user){
+      if (hasConfirmed) {
+        return user;
+      }
       return {
         // @ts-ignore
         id: user?._id,
