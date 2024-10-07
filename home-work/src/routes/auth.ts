@@ -84,25 +84,19 @@ auth.post('/refresh-token', async (req, res) => {
   if (!refreshToken) {
     return res.sendStatus(401);
   }
-  try {
-    const decoded = await jwtService.getUserIdByToken(refreshToken);
-    if (decoded) {
-      const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
-      const accessToken = await jwtService.createJWT({ id: decoded });
-
-      res
-        .status(200)
-        .cookie('refreshToken', newRefreshToken, {
-          httpOnly: true,
-          sameSite: 'strict',
-          secure: true
-        })
-        .send({ accessToken });
-      return;
-    }
-  } catch (error) {
-    res.clearCookie('refreshToken');
-    return res.sendStatus(401)
+  const decoded = await jwtService.getUserIdByToken(refreshToken);
+  if (decoded) {
+    const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
+    const accessToken = await jwtService.createJWT({ id: decoded });
+    res
+      .status(200)
+      .cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: true
+      })
+      .send({ accessToken });
+    return;
   }
   res.clearCookie('refreshToken');
   return res.sendStatus(401);
