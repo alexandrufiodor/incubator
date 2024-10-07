@@ -109,10 +109,6 @@ auth.post('/refresh-token', async (req, res) => {
 });
 
 auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
-  const refreshToken = req.cookies['refreshToken'];
-  if (!refreshToken) {
-    return res.status(401);
-  }
   res.clearCookie('refreshToken');
   res.sendStatus(204)
 });
