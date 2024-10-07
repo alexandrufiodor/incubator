@@ -41,7 +41,8 @@ auth.post( '/login', async (req, res) => {
     return;
   }
   const token = await jwtService.createJWT(user)
-  res.status(200).send({
+  const refreshToken = await jwtService.createJWT(user, '20s')
+  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).send({
     accessToken: token
   });
 })
@@ -76,3 +77,25 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
   res.sendStatus(204);
   return;
 })
+
+
+auth.post('/refresh-token', authWithBarearTokenMiddleware, (req, res) => {
+  const refreshToken = req.cookies['refreshToken'];
+  if (!refreshToken) {
+    return res.status(401);
+  }
+  try {
+    const decoded = jwtService.getUserIdByToken(refreshToken);
+    const newRefreshToken = jwtService.createJWT({ id: decoded }, '20s');
+    const accessToken = jwtService.createJWT({ id: decoded });
+
+    res
+      .status(200)
+      .cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'strict' })
+      .send({accessToken});
+  } catch (error) {
+    return res.status(400).send('Invalid refresh token.');
+  }
+  res.sendStatus(401)
+  return
+});
