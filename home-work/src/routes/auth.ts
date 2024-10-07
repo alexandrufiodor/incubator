@@ -108,9 +108,8 @@ auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
   try {
     res.clearCookie('refreshToken');
     res.sendStatus(204)
+    return
   } catch (error) {
     return res.status(400).send('Invalid refresh token.');
   }
-  res.sendStatus(401)
-  return
 });
