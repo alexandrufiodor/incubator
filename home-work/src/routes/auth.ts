@@ -87,7 +87,7 @@ auth.post('/refresh-token', async (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    if (err) {
+    if (err || Date.now() >= user.exp * 1000) {
       res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
