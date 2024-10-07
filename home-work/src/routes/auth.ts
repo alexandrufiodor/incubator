@@ -99,3 +99,18 @@ auth.post('/refresh-token', authWithBarearTokenMiddleware, (req, res) => {
   res.sendStatus(401)
   return
 });
+
+auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
+  const refreshToken = req.cookies['refreshToken'];
+  if (!refreshToken) {
+    return res.status(401);
+  }
+  try {
+    res.clearCookie('refreshToken');
+    res.sendStatus(204)
+  } catch (error) {
+    return res.status(400).send('Invalid refresh token.');
+  }
+  res.sendStatus(401)
+  return
+});
