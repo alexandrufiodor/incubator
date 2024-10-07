@@ -98,28 +98,6 @@ auth.post('/refresh-token', async (req, res) => {
       .status(200)
       .send({ accessToken: newAccessToken });
   });
-  // try {
-  //
-  //   const decoded = await jwtService.getUserIdByToken(refreshToken);
-  //   if (decoded) {
-  //     const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
-  //     const accessToken = await jwtService.createJWT({ id: decoded });
-  //     res
-  //       .status(200)
-  //       .cookie('refreshToken', newRefreshToken, {
-  //         httpOnly: true,
-  //         sameSite: 'strict',
-  //         secure: true
-  //       })
-  //       .send({ accessToken });
-  //     return;
-  //   }
-  // } catch (error) {
-  //   res.clearCookie('refreshToken');
-  //   return res.sendStatus(401)
-  // }
-  // res.clearCookie('refreshToken');
-  // return res.sendStatus(401);
 });
 
 auth.post('/logout', (req, res) => {
@@ -127,6 +105,12 @@ auth.post('/logout', (req, res) => {
   if (!refreshToken) {
     return res.sendStatus(401);
   }
-  res.clearCookie('refreshToken', { httpOnly: true });
-  return res.status(204).send();
+  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
+    if (err || Date.now() >= user.exp * 1000) {
+      res.clearCookie('refreshToken');
+      return res.sendStatus(401);
+    }
+    res.clearCookie('refreshToken', { httpOnly: true });
+    return res.status(204).send();
+  });
 });
