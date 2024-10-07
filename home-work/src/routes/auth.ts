@@ -122,7 +122,11 @@ auth.post('/refresh-token', async (req, res) => {
   // return res.sendStatus(401);
 });
 
-auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
-  res.clearCookie('refreshToken');
-  res.sendStatus(204)
+auth.post('/logout', (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.sendStatus(401);
+  }
+  res.clearCookie('refreshToken', { httpOnly: true });
+  return res.status(204).send();
 });
