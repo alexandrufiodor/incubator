@@ -42,7 +42,7 @@ auth.post( '/login', async (req, res) => {
   }
   const token = await jwtService.createJWT(user)
   const refreshToken = await jwtService.createJWT(user, '20s')
-  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).send({
+  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true, maxAge: 20 * 1000 }).send({
     accessToken: token
   });
 })
@@ -91,7 +91,7 @@ auth.post('/refresh-token', authWithBarearTokenMiddleware, (req, res) => {
 
     res
       .status(200)
-      .cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'strict' })
+      .cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'strict', secure: true, maxAge: 20 * 1000 })
       .send({accessToken});
   } catch (error) {
     return res.status(400).send('Invalid refresh token.');
