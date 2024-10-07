@@ -95,7 +95,8 @@ auth.post('/refresh-token', async (req, res) => {
       .send({accessToken});
     return
   } catch (error) {
-    return res.status(400).send('Invalid refresh token.');
+    res.clearCookie('refreshToken');
+    return res.sendStatus(401)
   }
 });
 
