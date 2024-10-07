@@ -12,9 +12,11 @@ import { comments } from './routes/comments';
 import { commentsService } from './domains/comments-services';
 import { email } from './routes/email';
 const app = express();
+import cookieParser = require("cookie-parser")
 
 const jsonBodyMiddleware = express.json();
 app.use(jsonBodyMiddleware);
+app.use(cookieParser());
 
 app.use('/api/email', email);
 app.use('/api/blogs', blogs);

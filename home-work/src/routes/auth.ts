@@ -79,20 +79,21 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
 })
 
 
-auth.post('/refresh-token', authWithBarearTokenMiddleware, (req, res) => {
-  const refreshToken = req.cookies['refreshToken'];
+auth.post('/refresh-token', async (req, res) => {
+  const refreshToken = req.cookies?.refreshToken;
   if (!refreshToken) {
-    return res.status(401);
+    return res.sendStatus(401);
   }
   try {
-    const decoded = jwtService.getUserIdByToken(refreshToken);
-    const newRefreshToken = jwtService.createJWT({ id: decoded }, '20s');
-    const accessToken = jwtService.createJWT({ id: decoded });
+    const decoded = await jwtService.getUserIdByToken(refreshToken);
+    const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
+    const accessToken = await jwtService.createJWT({ id: decoded });
 
     res
       .status(200)
       .cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'strict', secure: true, maxAge: 20 * 1000 })
       .send({accessToken});
+    return
   } catch (error) {
     return res.status(400).send('Invalid refresh token.');
   }
