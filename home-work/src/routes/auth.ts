@@ -42,7 +42,7 @@ auth.post( '/login', async (req, res) => {
   }
   const token = await jwtService.createJWT(user)
   const refreshToken = await jwtService.createJWT(user, '20s')
-  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true, maxAge: 20 * 1000 }).send({
+  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true }).send({
     accessToken: token
   });
 })
@@ -86,18 +86,26 @@ auth.post('/refresh-token', async (req, res) => {
   }
   try {
     const decoded = await jwtService.getUserIdByToken(refreshToken);
-    const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
-    const accessToken = await jwtService.createJWT({ id: decoded });
+    if (decoded) {
+      const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
+      const accessToken = await jwtService.createJWT({ id: decoded });
 
-    res
-      .status(200)
-      .cookie('refreshToken', newRefreshToken, { httpOnly: true, sameSite: 'strict', secure: true, maxAge: 20 * 1000 })
-      .send({accessToken});
-    return
+      res
+        .status(200)
+        .cookie('refreshToken', newRefreshToken, {
+          httpOnly: true,
+          sameSite: 'strict',
+          secure: true
+        })
+        .send({ accessToken });
+      return;
+    }
   } catch (error) {
     res.clearCookie('refreshToken');
     return res.sendStatus(401)
   }
+  res.clearCookie('refreshToken');
+  return res.sendStatus(401);
 });
 
 auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
