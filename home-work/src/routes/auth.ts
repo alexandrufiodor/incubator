@@ -87,7 +87,7 @@ auth.post('/refresh-token', async (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    if (err || Date.now() >= user.exp * 1000) {
+    if (err || Date.now() >= user.exp * 1000 || !user) {
       res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
@@ -107,7 +107,7 @@ auth.post('/logout', (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    if (err || Date.now() >= user.exp * 1000) {
+    if (err || Date.now() >= user.exp * 1000 || !user) {
       return res.sendStatus(401);
     }
     return res.sendStatus(204);
