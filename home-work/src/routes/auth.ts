@@ -102,15 +102,14 @@ auth.post('/refresh-token', async (req, res) => {
 
 auth.post('/logout', (req, res) => {
   const refreshToken = req.cookies.refreshToken;
+  res.clearCookie('refreshToken', { httpOnly: true });
   if (!refreshToken) {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
     if (err || Date.now() >= user.exp * 1000) {
-      res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
-    res.clearCookie('refreshToken', { httpOnly: true });
-    return res.status(204).send();
+    return res.sendStatus(204);
   });
 });
