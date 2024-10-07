@@ -89,7 +89,6 @@ auth.post('/refresh-token', async (req, res) => {
     if (decoded) {
       const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
       const accessToken = await jwtService.createJWT({ id: decoded });
-      res.clearCookie('refreshToken');
       res
         .status(200)
         .cookie('refreshToken', newRefreshToken, {
