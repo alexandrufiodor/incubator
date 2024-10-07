@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { authServices } from '../domains/auth-services';
-import { jwtService } from '../application/jwt-service';
+import { jwtSecret, jwtService } from '../application/jwt-service';
 import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { emailValidation, loginValidation, passwordValidation } from './users';
 import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
+//@ts-ignore
+import jwt from 'jsonwebtoken';
 
 export const codeValidation = body('code')
   .notEmpty()
@@ -84,27 +86,40 @@ auth.post('/refresh-token', async (req, res) => {
   if (!refreshToken) {
     return res.sendStatus(401);
   }
-  try {
-    const decoded = await jwtService.getUserIdByToken(refreshToken);
-    if (decoded) {
-      const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
-      const accessToken = await jwtService.createJWT({ id: decoded });
-      res
-        .status(200)
-        .cookie('refreshToken', newRefreshToken, {
-          httpOnly: true,
-          sameSite: 'strict',
-          secure: true
-        })
-        .send({ accessToken });
-      return;
+  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
+    if (err) {
+      res.clearCookie('refreshToken');
+      return res.sendStatus(401);
     }
-  } catch (error) {
-    res.clearCookie('refreshToken');
-    return res.sendStatus(401)
-  }
-  res.clearCookie('refreshToken');
-  return res.sendStatus(401);
+    const newAccessToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '10s' });
+    const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
+    res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
+    res
+      .status(200)
+      .send({ accessToken: newAccessToken });
+  });
+  // try {
+  //
+  //   const decoded = await jwtService.getUserIdByToken(refreshToken);
+  //   if (decoded) {
+  //     const newRefreshToken = await jwtService.createJWT({ id: decoded }, '20s');
+  //     const accessToken = await jwtService.createJWT({ id: decoded });
+  //     res
+  //       .status(200)
+  //       .cookie('refreshToken', newRefreshToken, {
+  //         httpOnly: true,
+  //         sameSite: 'strict',
+  //         secure: true
+  //       })
+  //       .send({ accessToken });
+  //     return;
+  //   }
+  // } catch (error) {
+  //   res.clearCookie('refreshToken');
+  //   return res.sendStatus(401)
+  // }
+  // res.clearCookie('refreshToken');
+  // return res.sendStatus(401);
 });
 
 auth.post('/logout', authWithBarearTokenMiddleware, (req, res) => {
