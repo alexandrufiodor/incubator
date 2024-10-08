@@ -7,9 +7,6 @@ import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
 //@ts-ignore
 import jwt from 'jsonwebtoken';
-import { clientDB } from '../repositories/db';
-import { ObjectId } from 'mongodb';
-import { blogCollection, BlogType } from '../repositories/blogs-repository';
 
 export const codeValidation = body('code')
   .notEmpty()
@@ -38,7 +35,7 @@ export const emailRegistrationValidation = body('email')
 
 
 export const auth = Router();
-export const tokensCollection = clientDB.collection<any>('tokens');
+
 auth.post( '/login', async (req, res) => {
   const user = await authServices.authUser(req.body?.loginOrEmail, req.body?.password)
   if (!user || !req.body?.loginOrEmail || !req.body?.password) {
@@ -47,10 +44,6 @@ auth.post( '/login', async (req, res) => {
   }
   const token = await jwtService.createJWT(user)
   const refreshToken = await jwtService.createJWT(user, '20s')
-  await tokensCollection.insertOne({
-    refreshToken,
-    isValid: true
-  })
   res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true }).send({
     accessToken: token
   });
@@ -93,29 +86,18 @@ auth.post('/refresh-token', async (req, res) => {
   if (!refreshToken) {
     return res.sendStatus(401);
   }
-  const token: any = await tokensCollection.findOne({ refreshToken: refreshToken });
-  if (!token?.isValid) {
-    jwt.verify(refreshToken, jwtSecret, async (err: any, user: any) => {
-      if (err || Date.now() >= user.exp * 1000 || !user) {
-        res.clearCookie('refreshToken');
-        return res.sendStatus(401);
-      }
-      const newAccessToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '10s' });
-      const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
-      await tokensCollection.updateOne({ refreshToken }, { '$set': { refreshToken, isValid: false } });
-      await tokensCollection.insertOne({
-        refreshToken: newRefreshToken,
-        isValid: true,
-      });
-
-      res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true });
-      res
-        .status(200)
-        .send({ accessToken: newAccessToken });
-    });
-  }
-  res.clearCookie('refreshToken');
-  return res.sendStatus(401);
+  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
+    if (err || Date.now() >= user.exp * 1000 || !user) {
+      res.clearCookie('refreshToken');
+      return res.sendStatus(401);
+    }
+    const newAccessToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '10s' });
+    const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
+    res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
+    res
+      .status(200)
+      .send({ accessToken: newAccessToken });
+  });
 });
 
 auth.post('/logout', (req, res) => {
@@ -124,17 +106,11 @@ auth.post('/logout', (req, res) => {
     res.clearCookie('refreshToken', { httpOnly: true });
     return res.sendStatus(401);
   }
-  jwt.verify(refreshToken, jwtSecret, async (err: any, user: any) => {
-   const test = await tokensCollection.updateOne({ refreshToken }, { "$set": { isValid: false } })
-    console.log('🚀auth.ts:129', JSON.stringify(test, null, 2));
-   if (test?.acknowledged) {
-     if (err || Date.now() >= user.exp * 1000 || !user) {
-       res.clearCookie('refreshToken', { httpOnly: true });
-       return res.sendStatus(401);
-     }
-     res.clearCookie('refreshToken', { httpOnly: true });
-     return res.sendStatus(204);
-   } res.clearCookie('refreshToken', { httpOnly: true });
-    return res.sendStatus(401);
+  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
+    res.clearCookie('refreshToken', { httpOnly: true });
+    if (err || Date.now() >= user.exp * 1000 || !user) {
+      return res.sendStatus(401);
+    }
+    return res.sendStatus(204);
   });
 });
