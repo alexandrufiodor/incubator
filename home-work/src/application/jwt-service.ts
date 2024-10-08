@@ -5,9 +5,9 @@ export const jwtSecret = '1234567890'
 
 const tokenBlacklist = new Map<string, number>();
 export const jwtService = {
-  // async createJWT(user: any, expiresIn = '10s') {
-  //   return jwt.sign({userId: user.id}, jwtSecret, {expiresIn})
-  // },
+  async createJWT1(user: any, expiresIn = '10s') {
+    return jwt.sign({userId: user.id}, jwtSecret, {expiresIn})
+  },
   async getUserIdByToken(token: string) {
     try {
       const result: any = jwt.verify(token, jwtSecret);

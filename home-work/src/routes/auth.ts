@@ -66,8 +66,8 @@ auth.post( '/login', async (req, res) => {
     res.sendStatus(401)
     return;
   }
-  const token = await jwtService.createJWT(user)
-  const refreshToken = await jwtService.createJWT(user, '20s')
+  const token = await jwtService.createJWT1(user)
+  const refreshToken = await jwtService.createJWT1(user, '20s')
   res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true }).send({
     accessToken: token
   });
