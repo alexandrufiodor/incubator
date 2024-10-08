@@ -3,10 +3,11 @@ import jwt from 'jsonwebtoken'
 import { ObjectId } from 'mongodb';
 export const jwtSecret = '1234567890'
 
+const tokenBlacklist = new Map<string, number>();
 export const jwtService = {
-  async createJWT(user: any, expiresIn = '10s') {
-    return jwt.sign({userId: user.id}, jwtSecret, {expiresIn})
-  },
+  // async createJWT(user: any, expiresIn = '10s') {
+  //   return jwt.sign({userId: user.id}, jwtSecret, {expiresIn})
+  // },
   async getUserIdByToken(token: string) {
     try {
       const result: any = jwt.verify(token, jwtSecret);
@@ -16,6 +17,38 @@ export const jwtService = {
       return (new ObjectId(result?.userId)).toString();
     } catch (error) {
       return null
+    }
+  },
+  async  createJWT(user: any, expiresIn: string = '10s') {
+    const payload = { userId: user.id };
+    return jwt.sign(payload, jwtSecret, { expiresIn });
+  },
+
+  async verifyJWT(token: string) {
+    try {
+      const payload = jwt.verify(token, jwtSecret);
+      return payload;
+    } catch (err) {
+      return null;
+    }
+  },
+
+  blacklistToken(token: string) {
+    const decodedToken: any = jwt.decode(token);
+    if (decodedToken) {
+      const ttl = decodedToken.exp - Math.floor(Date.now() / 1000);
+      tokenBlacklist.set(token, Date.now() + ttl * 1000);
+    }
+  },
+
+  isTokenBlacklisted(token: string) {
+    const expiry = tokenBlacklist.get(token);
+    if (expiry && Date.now() < expiry) {
+      return true;
+    } else {
+      // Clean up old tokens
+      tokenBlacklist.delete(token);
+      return false;
     }
   }
 }

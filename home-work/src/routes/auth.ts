@@ -43,8 +43,16 @@ const verifyRefreshToken = (req: any, res: any, next: any) => {
     return res.status(401).send('Access Denied: No Token Provided!');
   }
 
+  if (jwtService.isTokenBlacklisted(refreshToken)) {
+    return res.status(401).send('Invalid Token');
+  }
+
   try {
-    const verified = jwt.verify(refreshToken, jwtSecret as string);
+    const verified = jwtService.verifyJWT(refreshToken);
+    if (!verified) {
+      return res.status(401).send('Invalid Token');
+    }
+
     req.user = verified;
     next();
   } catch (err) {
@@ -98,8 +106,12 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
 
 
 auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
-  const newAccessToken = jwt.sign({ userId: req?.user.userId }, jwtSecret, { expiresIn: '10s' });
-  const newRefreshToken = jwt.sign({ userId: req?.user.userId }, jwtSecret, { expiresIn: '20s' });
+  const oldRefreshToken = req.cookies.refreshToken;
+  const newAccessToken = jwtService.createJWT({ userId: req.user.userId }, '10s');
+  const newRefreshToken = jwtService.createJWT({ userId: req.user.userId }, '20s');
+
+  // Blacklist the old refresh token
+  jwtService.blacklistToken(oldRefreshToken);
   res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
   res
     .status(200)
@@ -107,6 +119,11 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
 });
 
 auth.post('/logout', verifyRefreshToken, (req, res) => {
+
+  const oldRefreshToken = req.cookies.refreshToken;
+
+  // Blacklist the refresh token
+  jwtService.blacklistToken(oldRefreshToken);
   res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
   return res.sendStatus(204);
 });
