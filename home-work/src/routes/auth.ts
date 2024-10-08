@@ -107,7 +107,7 @@ auth.post('/logout', (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    res.clearCookie('refreshToken', { httpOnly: true });
+    res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
     if (err || Date.now() >= user.exp * 1000 || !user) {
       return res.sendStatus(401);
     }
