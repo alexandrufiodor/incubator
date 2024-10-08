@@ -36,6 +36,22 @@ export const emailRegistrationValidation = body('email')
 
 export const auth = Router();
 
+const verifyRefreshToken = (req: any, res: any, next: any) => {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).send('Access Denied: No Token Provided!');
+  }
+
+  try {
+    const verified = jwt.verify(refreshToken, jwtSecret as string);
+    req.user = verified;
+    next();
+  } catch (err) {
+    return res.status(401).send('Invalid Token');
+  }
+};
+
 auth.post( '/login', async (req, res) => {
   const user = await authServices.authUser(req.body?.loginOrEmail, req.body?.password)
   if (!user || !req.body?.loginOrEmail || !req.body?.password) {
@@ -92,8 +108,8 @@ auth.post('/refresh-token', async (req, res) => {
       return res.sendStatus(401);
     }
     const newAccessToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '10s' });
-    const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
-    res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
+    // const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
+    // res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
     res
       .status(200)
       .send({ accessToken: newAccessToken });
@@ -107,7 +123,7 @@ auth.post('/logout', (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
+    res.clearCookie('refreshToken', { httpOnly: true });
     if (err || Date.now() >= user.exp * 1000 || !user) {
       return res.sendStatus(401);
     }
