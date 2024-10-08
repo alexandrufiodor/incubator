@@ -97,36 +97,16 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
 })
 
 
-auth.post('/refresh-token', async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken;
-  if (!refreshToken) {
-    return res.sendStatus(401);
-  }
-  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    if (err || Date.now() >= user.exp * 1000 || !user) {
-      res.clearCookie('refreshToken');
-      return res.sendStatus(401);
-    }
-    const newAccessToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '10s' });
-    // const newRefreshToken = jwt.sign({ userId: user.userId }, jwtSecret, { expiresIn: '20s' });
-    // res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
-    res
-      .status(200)
-      .send({ accessToken: newAccessToken });
-  });
+auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
+  const newAccessToken = jwt.sign({ userId: req?.user.userId }, jwtSecret, { expiresIn: '10s' });
+  const newRefreshToken = jwt.sign({ userId: req?.user.userId }, jwtSecret, { expiresIn: '20s' });
+  res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
+  res
+    .status(200)
+    .send({ accessToken: newAccessToken });
 });
 
-auth.post('/logout', (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) {
-    res.clearCookie('refreshToken', { httpOnly: true });
-    return res.sendStatus(401);
-  }
-  jwt.verify(refreshToken, jwtSecret, (err: any, user: any) => {
-    res.clearCookie('refreshToken', { httpOnly: true });
-    if (err || Date.now() >= user.exp * 1000 || !user) {
-      return res.sendStatus(401);
-    }
-    return res.sendStatus(204);
-  });
+auth.post('/logout', verifyRefreshToken, (req, res) => {
+  res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
+  return res.sendStatus(204);
 });
