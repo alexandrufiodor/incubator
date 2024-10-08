@@ -125,11 +125,12 @@ auth.post('/logout', (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, async (err: any, user: any) => {
-    res.clearCookie('refreshToken', { httpOnly: true });
-    await tokensCollection.updateOne({ refreshToken }, { "$set": { refreshToken, isValid: false } })
+    await tokensCollection.updateOne({ refreshToken }, { "$set": { isValid: false } })
     if (err || Date.now() >= user.exp * 1000 || !user) {
+      res.clearCookie('refreshToken', { httpOnly: true });
       return res.sendStatus(401);
     }
+    res.clearCookie('refreshToken', { httpOnly: true });
     return res.sendStatus(204);
   });
 });
