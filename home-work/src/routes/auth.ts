@@ -125,12 +125,16 @@ auth.post('/logout', (req, res) => {
     return res.sendStatus(401);
   }
   jwt.verify(refreshToken, jwtSecret, async (err: any, user: any) => {
-    await tokensCollection.updateOne({ refreshToken }, { "$set": { isValid: false } })
-    if (err || Date.now() >= user.exp * 1000 || !user) {
-      res.clearCookie('refreshToken', { httpOnly: true });
-      return res.sendStatus(401);
-    }
-    res.clearCookie('refreshToken', { httpOnly: true });
-    return res.sendStatus(204);
+   const test = await tokensCollection.updateOne({ refreshToken }, { "$set": { isValid: false } })
+    console.log('🚀auth.ts:129', JSON.stringify(test, null, 2));
+   if (test?.acknowledged) {
+     if (err || Date.now() >= user.exp * 1000 || !user) {
+       res.clearCookie('refreshToken', { httpOnly: true });
+       return res.sendStatus(401);
+     }
+     res.clearCookie('refreshToken', { httpOnly: true });
+     return res.sendStatus(204);
+   } res.clearCookie('refreshToken', { httpOnly: true });
+    return res.sendStatus(401);
   });
 });
