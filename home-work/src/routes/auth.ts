@@ -118,9 +118,9 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
     .send({ accessToken: newAccessToken });
 });
 
-auth.post('/logout', verifyRefreshToken, async (req, res) => {
+auth.post('/logout', async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
-  res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
+  res.clearCookie('refreshToken');
   return res.sendStatus(204);
 });
