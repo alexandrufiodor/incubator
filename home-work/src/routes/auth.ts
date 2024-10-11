@@ -52,6 +52,7 @@ const verifyRefreshToken = async (req: any, res: any, next: any) => {
     }
     const verified = await jwtService.getUserIdByToken(refreshToken);
     if (!verified) {
+      await authRepository.addOldRefreshTokenUser(refreshToken);
       res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
