@@ -111,7 +111,7 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   const newAccessToken = jwtService.createJWT({ userId: req.user.userId }, '10s');
   const newRefreshToken = jwtService.createJWT({ userId: req.user.userId }, '20s');
-
+  res.clearCookie('refreshToken');
   res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
   res
     .status(200)
@@ -122,7 +122,7 @@ auth.post('/logout', async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
   const findTokenInDB = await authRepository.getOldRefreshTokenUser(oldRefreshToken);
   if (findTokenInDB) {
-    res.clearCookie('refreshToken');
+    // res.clearCookie('refreshToken');
     return res.sendStatus(401);
   }
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
