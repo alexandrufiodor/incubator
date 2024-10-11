@@ -23,7 +23,6 @@ export const usersCollection = clientDB.collection<UserType | User>('users');
 export const usersRepository = {
   async findAllUsers(pageSize: string, pageNumber: string, sortBy: string, sortDirection: string, filter ={}): Promise<any> {
     const pagination = await getPaginationWithFilter(pageNumber, pageSize, usersCollection, filter);
-    console.log('🚀users-repository.ts:26', JSON.stringify(await usersCollection.find(filter).sort({ [`${sortBy}`]: sortDirection == 'desc' ? -1 : 1 }).limit(pagination.limit).skip(pagination.offset).toArray(), null, 2));
     //@ts-ignore
     const users: Array<User> = (await usersCollection.find(filter).sort({ [`${sortBy}`]: sortDirection == 'desc' ? -1 : 1 }).limit(pagination.limit).skip(pagination.offset).toArray())?.map((user: User) => {
       return {
@@ -61,7 +60,6 @@ export const usersRepository = {
   async findUserByConfirmationCode(code: string): Promise<any> {
     const query = { 'emailConfirmation.confirmationCode': code }
     const user: any = await usersCollection.findOne(query);
-    console.log('🚀users-repository.ts:60', JSON.stringify(user, null, 2));
     if (user){
       return {
         // @ts-ignore
@@ -96,7 +94,6 @@ export const usersRepository = {
     };
   },
   async updateUser(id: string, user: any): Promise<Array<PostType> | undefined | null> {
-    console.log('🚀users-repository.ts:99', JSON.stringify(user, null, 2));
     const updatedUser: any = await usersCollection.updateOne({ _id: new ObjectId(id) }, { "$set": { ...user } })
     return updatedUser;
   },

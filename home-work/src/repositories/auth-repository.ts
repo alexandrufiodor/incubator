@@ -1,6 +1,7 @@
-import { usersRepository } from './users-repository';
+import { usersRepository, UserType } from './users-repository';
 import { comparePassword } from '../utils/utils';
 import { ObjectId } from 'mongodb';
+import { clientDB } from './db';
 interface AccountData {
   login: string;
   email: string;
@@ -20,6 +21,8 @@ export interface User {
   emailConfirmation: EmailConfirmation;
 }
 
+export const tokensCollection = clientDB.collection<any>('tokens');
+
 export const authRepository = {
   async findUserByLoginOrEmail(loginOrEmail: string, password: string): Promise<boolean> {
     const user = await usersRepository.findUserByLoginOrEmail(loginOrEmail);
@@ -37,6 +40,18 @@ export const authRepository = {
       return null
     }
     return user
+  },
+  async addOldRefreshTokenUser(token: any): Promise<any> {
+    await tokensCollection.insertOne({
+      token
+    });
+  },
+  async getOldRefreshTokenUser(token: any): Promise<boolean> {
+    const tokenItem = await tokensCollection.findOne({
+      token
+    });
+    return !!tokenItem;
+
   },
 }
 

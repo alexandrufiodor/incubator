@@ -7,6 +7,7 @@ import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
 //@ts-ignore
 import jwt from 'jsonwebtoken';
+import { authRepository } from '../repositories/auth-repository';
 
 export const codeValidation = body('code')
   .notEmpty()
@@ -36,27 +37,27 @@ export const emailRegistrationValidation = body('email')
 
 export const auth = Router();
 
-const verifyRefreshToken = (req: any, res: any, next: any) => {
+const verifyRefreshToken = async (req: any, res: any, next: any) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
-    return res.status(401).send('Access Denied: No Token Provided!');
-  }
-
-  if (jwtService.isTokenBlacklisted(refreshToken)) {
-    return res.status(401).send('Invalid Token');
+    return res.sendStatus(401);
   }
 
   try {
-    const verified = jwtService.verifyJWT(refreshToken);
+    const findTokenInDB = await authRepository.getOldRefreshTokenUser(refreshToken);
+    if (findTokenInDB) {
+      return res.sendStatus(401);
+    }
+    const verified = jwtService.getUserIdByToken(refreshToken);
     if (!verified) {
-      return res.status(401).send('Invalid Token');
+      return res.sendStatus(401);
     }
 
     req.user = verified;
     next();
   } catch (err) {
-    return res.status(401).send('Invalid Token');
+    return res.sendStatus(401);
   }
 };
 
@@ -66,9 +67,9 @@ auth.post( '/login', async (req, res) => {
     res.sendStatus(401)
     return;
   }
-  const token = await jwtService.createJWT1(user)
-  const refreshToken = await jwtService.createJWT1(user, '20s')
-  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict', secure: true }).send({
+  const token = await jwtService.createJWT(user)
+  const refreshToken = await jwtService.createJWT(user, '20s')
+  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true,  secure: true }).send({
     accessToken: token
   });
 })
@@ -107,23 +108,19 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
 
 auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
+  await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   const newAccessToken = jwtService.createJWT({ userId: req.user.userId }, '10s');
   const newRefreshToken = jwtService.createJWT({ userId: req.user.userId }, '20s');
 
-  // Blacklist the old refresh token
-  jwtService.blacklistToken(oldRefreshToken);
   res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true });
   res
     .status(200)
     .send({ accessToken: newAccessToken });
 });
 
-auth.post('/logout', verifyRefreshToken, (req, res) => {
-
+auth.post('/logout', verifyRefreshToken, async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
-
-  // Blacklist the refresh token
-  jwtService.blacklistToken(oldRefreshToken);
+  await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   res.cookie('refreshToken', '', { httpOnly: true, expires: new Date(0) });
   return res.sendStatus(204);
 });
