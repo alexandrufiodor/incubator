@@ -1,12 +1,11 @@
 import { Router } from 'express';
 import { authServices } from '../domains/auth-services';
-import { jwtSecret, jwtService } from '../application/jwt-service';
+import { jwtService } from '../application/jwt-service';
 import { authWithBarearTokenMiddleware, inputValidationMiddleware } from '../middlewares/middlewares';
 import { emailValidation, loginValidation, passwordValidation } from './users';
 import { body } from 'express-validator';
 import { usersRepository } from '../repositories/users-repository';
 //@ts-ignore
-import jwt from 'jsonwebtoken';
 import { authRepository } from '../repositories/auth-repository';
 
 export const codeValidation = body('code')
@@ -118,7 +117,7 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
     .send({ accessToken: newAccessToken });
 });
 
-auth.post('/logout', async (req, res) => {
+auth.post('/logout', authWithBarearTokenMiddleware, async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   res.clearCookie('refreshToken');
