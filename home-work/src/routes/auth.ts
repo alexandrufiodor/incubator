@@ -50,12 +50,11 @@ const verifyRefreshToken = async (req: any, res: any, next: any) => {
       res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
-    const verified = jwtService.getUserIdByToken(refreshToken);
+    const verified = await jwtService.getUserIdByToken(refreshToken);
     if (!verified) {
       res.clearCookie('refreshToken');
       return res.sendStatus(401);
     }
-
     req.user = verified;
     next();
   } catch (err) {
@@ -113,8 +112,8 @@ auth.post( '/registration-email-resending', emailRegistrationValidation, inputVa
 auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
-  const newAccessToken = jwtService.createJWT({ userId: req.user.userId }, '10s');
-  const newRefreshToken = jwtService.createJWT({ userId: req.user.userId }, '20s');
+  const newAccessToken = await jwtService.createJWT({ id: req.user }, '10s');
+  const newRefreshToken = await jwtService.createJWT({ id: req.user }, '20s');
   res.cookie('refreshToken', newRefreshToken, { httpOnly: true,  secure: true, expires: new Date(Date.now() + 20 * 1000) });
   res
     .status(200)
