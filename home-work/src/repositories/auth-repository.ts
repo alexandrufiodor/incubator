@@ -1,4 +1,4 @@
-import { usersRepository, UserType } from './users-repository';
+import { usersRepository } from './users-repository';
 import { comparePassword } from '../utils/utils';
 import { ObjectId } from 'mongodb';
 import { clientDB } from './db';
@@ -51,7 +51,6 @@ export const authRepository = {
       token
     });
     return !!tokenItem;
-
   },
 }
 

@@ -68,7 +68,8 @@ auth.post( '/login', async (req, res) => {
   }
   const token = await jwtService.createJWT(user)
   const refreshToken = await jwtService.createJWT(user, '20s')
-  res.status(200).cookie('refreshToken', refreshToken, { httpOnly: true,  secure: true }).send({
+  res.cookie('refreshToken', refreshToken, { httpOnly: true,  secure: true });
+  res.status(200).send({
     accessToken: token
   });
 })
@@ -119,6 +120,11 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
 
 auth.post('/logout', async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
+  const findTokenInDB = await authRepository.getOldRefreshTokenUser(oldRefreshToken);
+  if (findTokenInDB) {
+    res.clearCookie('refreshToken');
+    return res.sendStatus(401);
+  }
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   res.clearCookie('refreshToken');
   return res.sendStatus(204);
