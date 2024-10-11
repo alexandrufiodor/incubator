@@ -120,11 +120,11 @@ auth.post('/refresh-token', verifyRefreshToken, async (req: any, res) => {
 
 auth.post('/logout', async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
-  const findTokenInDB = await authRepository.getOldRefreshTokenUser(oldRefreshToken);
-  if (findTokenInDB) {
-    // res.clearCookie('refreshToken');
-    return res.sendStatus(401);
-  }
+  // const findTokenInDB = await authRepository.getOldRefreshTokenUser(oldRefreshToken);
+  // if (findTokenInDB) {
+  //   // res.clearCookie('refreshToken');
+  //   return res.sendStatus(401);
+  // }
   await authRepository.addOldRefreshTokenUser(oldRefreshToken);
   res.clearCookie('refreshToken');
   return res.sendStatus(204);
